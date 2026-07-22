@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { ImageUpload } from '@/components/admin/ImageUpload';
+import { siteConfig } from '@/config/site';
 
 interface SettingsFormProps {
   initialSettings: Record<string, any>;
@@ -14,11 +15,11 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   
-  const [siteName, setSiteName] = useState(initialSettings.site_name || 'SaaS Blog');
-  const [siteDescription, setSiteDescription] = useState(initialSettings.site_description || '');
+  const [siteName, setSiteName] = useState(initialSettings.site_name || siteConfig.name);
+  const [siteDescription, setSiteDescription] = useState(initialSettings.site_description || siteConfig.description);
   const [siteLogoUrl, setSiteLogoUrl] = useState(initialSettings.site_logo_url || '');
-  const [defaultAuthor, setDefaultAuthor] = useState(initialSettings.default_author || 'SaaS Boilerplate');
-  const [defaultMetaImage, setDefaultMetaImage] = useState(initialSettings.default_meta_image || '');
+  const [defaultAuthor, setDefaultAuthor] = useState(initialSettings.default_author || siteConfig.authorBio.name);
+  const [defaultMetaImage, setDefaultMetaImage] = useState(initialSettings.default_meta_image || siteConfig.authorBio.imageUrl);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +67,7 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
             value={siteName}
             onChange={(e) => setSiteName(e.target.value)}
             className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-            placeholder="e.g. SaaS Blog"
+            placeholder={`e.g. ${siteConfig.name}`}
           />
         </div>
 
@@ -94,7 +95,7 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
             value={defaultAuthor}
             onChange={(e) => setDefaultAuthor(e.target.value)}
             className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-            placeholder="e.g. John Doe"
+            placeholder={`e.g. ${siteConfig.authorBio.name}`}
           />
         </div>
 

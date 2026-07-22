@@ -11,6 +11,7 @@ import { Suspense } from 'react';
 import { FeaturedPost } from '@/components/blog/FeaturedPost';
 import { RevealWrapper } from '@/components/RevealWrapper';
 import { HeroNewsletterForm } from '@/components/blog/HeroNewsletterForm';
+import { siteConfig } from '@/config/site';
 
 export default async function BlogHomepage(props: { searchParams: { page?: string } }) {
   const searchParams = props.searchParams;
@@ -18,7 +19,7 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
   const { data: posts, count } = await getPosts(page, { status: 'published' });
   const categories = await getCategories();
   const settings = await getSettings();
-  const defaultAuthor = settings?.default_author || 'Author Name';
+  const defaultAuthor = settings?.default_author || siteConfig.authorBio.name;
 
   const featuredPost = page === 1 && posts.length > 0 ? posts[0] : null;
   const latestPosts = page === 1 ? posts.slice(1) : posts;

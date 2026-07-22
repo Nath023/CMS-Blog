@@ -6,12 +6,13 @@ import { Pagination } from '@/components/blog/Pagination';
 import { BlogCTA } from '@/components/blog/BlogCTA';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
+import { siteConfig } from '@/config/site';
 
 export async function generateMetadata(props: { params: { name: string } }): Promise<Metadata> {
   const params = props.params;
   const authorName = decodeURIComponent(params.name);
   return {
-    title: `${authorName} Archives | SaaS Blog`,
+    title: `${authorName} Archives | ${siteConfig.name} Blog`,
     description: `Browse articles written by ${authorName}.`,
   };
 }

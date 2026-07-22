@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { PostWithCategoryAndTags } from '@/lib/blog/queries';
 import { Image as ImageIcon } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 export function FeaturedPost({ post, defaultAuthor }: { post: PostWithCategoryAndTags, defaultAuthor?: string }) {
   return (
@@ -33,7 +34,7 @@ export function FeaturedPost({ post, defaultAuthor }: { post: PostWithCategoryAn
             </span>
           )}
           <span className="text-gray-400">·</span>
-          <span className="text-gray-500 font-medium">{post.author_name || defaultAuthor || 'SaaS Boilerplate'}</span>
+          <span className="text-gray-500 font-medium">{post.author_name || defaultAuthor || siteConfig.authorBio.name}</span>
         </div>
         
         <h2 className="text-3xl md:text-4xl font-serif text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-[1.2] mb-5">

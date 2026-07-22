@@ -1,9 +1,10 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { siteConfig } from '@/config/site';
 
 export const revalidate = 0;
 export const metadata = {
-  title: 'Free SEO & Digital Marketing Guides | SaaS',
+  title: `Free SEO & Digital Marketing Guides | ${siteConfig.name}`,
   description: 'Download our free guides and resources to accelerate your digital growth.',
 };
 

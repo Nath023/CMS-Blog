@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { AdminNav } from '@/components/admin/AdminNav';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { getSettings } from '@/lib/blog/queries';
+import { siteConfig } from '@/config/site';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
@@ -12,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="w-full md:w-64 shrink-0 bg-white dark:bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800 p-4 md:p-6 md:min-h-screen flex flex-col z-50 sticky top-0 md:static">
         <div className="flex items-center justify-between md:justify-start gap-4 md:mb-8">
           <Link href="/admin" className="flex items-center gap-3 group">
-            <Image src={siteLogoUrl} alt={settings?.site_name || "Site Logo"} width={800} height={800} quality={100} className="w-auto h-7 md:h-8 object-contain transition-transform group-hover:scale-105" referrerPolicy="no-referrer" priority />
+            <Image src={siteLogoUrl} alt={settings?.site_name || siteConfig.name} width={800} height={800} quality={100} className="w-auto h-7 md:h-8 object-contain transition-transform group-hover:scale-105" referrerPolicy="no-referrer" priority />
             <div className="h-4 w-[1px] bg-gray-300 dark:bg-gray-700 hidden sm:block"></div>
             <span className="text-sm md:text-base font-bold tracking-tight text-slate-600 dark:text-slate-300 hidden md:inline-block">
               Admin

@@ -35,7 +35,7 @@ export async function generateMetadata(props: { params: { slug: string } }): Pro
   const imageUrl = post.og_image_url || post.featured_image_url || `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.jpg`;
   return {
     title, description, alternates: { canonical: url },
-    openGraph: { title, description, url, type: 'article', publishedTime: post.published_at || post.created_at, authors: [post.author_name || settings.default_author || 'SaaS Boilerplate'], images: [{ url: imageUrl }] },
+    openGraph: { title, description, url, type: 'article', publishedTime: post.published_at || post.created_at, authors: [post.author_name || settings.default_author || siteConfig.authorBio.name], images: [{ url: imageUrl }] },
     twitter: { card: 'summary_large_image', title, description, images: [imageUrl] },
   };
 }
@@ -55,7 +55,7 @@ export default async function BlogPostPage(props: { params: { slug: string } }) 
     '@context': 'https://schema.org', '@type': 'Article', headline: post.title,
     image: post.featured_image_url ? [post.featured_image_url] : [],
     datePublished: post.published_at || post.created_at, dateModified: post.updated_at,
-    author: [{ '@type': 'Organization', name: post.author_name || settings.default_author || 'Author Name' }]
+    author: [{ '@type': 'Organization', name: post.author_name || settings.default_author || siteConfig.authorBio.name }]
   };
 
   return (
@@ -67,7 +67,7 @@ export default async function BlogPostPage(props: { params: { slug: string } }) 
         <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 lg:p-16 shadow-sm overflow-hidden mb-16">
           <header className="mb-12 text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-[1.1] mb-8">{post.title}</h1>
-            <div className="text-lg font-medium text-slate-600 dark:text-slate-400 mb-6">By {post.author_name || settings.default_author || 'Author Name'}</div>
+            <div className="text-lg font-medium text-slate-600 dark:text-slate-400 mb-6">By {post.author_name || settings.default_author || siteConfig.authorBio.name}</div>
             <div className="flex justify-center mt-6 items-center gap-4">
               <ShareButtons 
                 url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'}/blog/${post.slug}`} 

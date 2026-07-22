@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { subscribeToNewsletter } from '@/lib/newsletter/actions';
+import Image from 'next/image';
 
 export function HeroNewsletterForm() {
   const [loading, setLoading] = useState(false);
@@ -57,8 +58,8 @@ export function HeroNewsletterForm() {
       <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400 font-sans">
         <div className="flex -space-x-2">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-800 border-2 border-[#FAFAFA] dark:border-[#050505] flex items-center justify-center text-[10px] font-bold text-slate-500 overflow-hidden">
-               <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Subscriber" className="w-full h-full object-cover" />
+            <div key={i} className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-800 border-2 border-[#FAFAFA] dark:border-[#050505] flex items-center justify-center text-[10px] font-bold text-slate-500 overflow-hidden relative">
+               <Image src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Subscriber" fill className="object-cover" referrerPolicy="no-referrer" />
             </div>
           ))}
         </div>

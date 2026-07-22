@@ -6,6 +6,7 @@ import { Pagination } from '@/components/blog/Pagination';
 import { BlogCTA } from '@/components/blog/BlogCTA';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
+import { siteConfig } from '@/config/site';
 
 export async function generateStaticParams() {
   const categories = await getCategories();
@@ -20,7 +21,7 @@ export async function generateMetadata(props: { params: { slug: string } }): Pro
   if (!category) return {};
 
   return {
-    title: `${category.name} Archives | SaaS Blog`,
+    title: `${category.name} Archives | ${siteConfig.name} Blog`,
     description: category.description || `Browse articles in the ${category.name} category.`,
   };
 }

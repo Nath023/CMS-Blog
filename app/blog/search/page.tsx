@@ -5,9 +5,10 @@ import { Pagination } from '@/components/blog/Pagination';
 import { SearchInput } from '@/components/blog/SearchInput';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
+import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
-  title: 'Search | Blog',
+  title: `Search | ${siteConfig.name} Blog`,
 };
 
 // Force dynamic since search params change

@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
+import { siteConfig } from '@/config/site';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = 'info@example.com';
+const FROM_EMAIL = siteConfig.contact.email;
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
   if (!process.env.RESEND_API_KEY) {
@@ -13,15 +14,15 @@ export async function sendWelcomeEmail(to: string, firstName?: string) {
   
   try {
     await resend.emails.send({
-      from: `SaaS Boilerplate Digital <${FROM_EMAIL}>`,
+      from: `${siteConfig.company.name} <${FROM_EMAIL}>`,
       to,
       subject: 'Welcome to our Newsletter!',
       html: `
         <div style="font-family: sans-serif; max-w-2xl; margin: 0 auto; padding: 20px;">
           <h2>Welcome aboard, ${name}!</h2>
-          <p>Thanks for subscribing to the SaaS Boilerplate newsletter.</p>
+          <p>Thanks for subscribing to the ${siteConfig.name} newsletter.</p>
           <p>We'll be sharing the latest insights on web design, SEO, and digital growth to help you scale your business.</p>
-          <p>Best regards,<br>The SaaS Boilerplate Team</p>
+          <p>Best regards,<br>The ${siteConfig.company.name} Team</p>
         </div>
       `,
     });
@@ -40,13 +41,13 @@ export async function sendLeadMagnetEmail(to: string, magnetTitle: string, fileU
   
   try {
     await resend.emails.send({
-      from: `SaaS Boilerplate Digital <${FROM_EMAIL}>`,
+      from: `${siteConfig.company.name} <${FROM_EMAIL}>`,
       to,
       subject: `Here is your resource: ${magnetTitle}`,
       html: `
         <div style="font-family: sans-serif; max-w-2xl; margin: 0 auto; padding: 20px;">
           <h2>Hi ${name},</h2>
-          <p>Welcome to the SaaS Boilerplate newsletter! We're excited to have you on board.</p>
+          <p>Welcome to the ${siteConfig.name} newsletter! We're excited to have you on board.</p>
           <p>Thank you for your interest! Here is the link to download your free resource: <strong>${magnetTitle}</strong>.</p>
           <div style="margin: 30px 0;">
             <a href="${fileUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Download Now</a>
@@ -54,7 +55,7 @@ export async function sendLeadMagnetEmail(to: string, magnetTitle: string, fileU
           <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
           <p><a href="${fileUrl}">${fileUrl}</a></p>
           <p>We'll be sharing the latest insights on web design, SEO, and digital growth with you soon.</p>
-          <p>Best regards,<br>The SaaS Boilerplate Team</p>
+          <p>Best regards,<br>The ${siteConfig.company.name} Team</p>
         </div>
       `,
     });
@@ -69,7 +70,7 @@ export async function sendBlogPostEmail(to: string[], postTitle: string, postExc
     return;
   }
   
-  const postUrl = `https://example.com/blog/${postSlug}`;
+  const postUrl = `${siteConfig.url}/blog/${postSlug}`;
   
   try {
     // Resend supports up to 50 recipients per request
@@ -77,7 +78,7 @@ export async function sendBlogPostEmail(to: string[], postTitle: string, postExc
     for (let i = 0; i < to.length; i += chunkSize) {
       const chunk = to.slice(i, i + chunkSize);
       await resend.emails.send({
-        from: `SaaS Boilerplate Digital <${FROM_EMAIL}>`,
+        from: `${siteConfig.company.name} <${FROM_EMAIL}>`,
         to: FROM_EMAIL, // Send to self
         bcc: chunk, // BCC the subscribers
         subject: `New Post: ${postTitle}`,
@@ -90,7 +91,7 @@ export async function sendBlogPostEmail(to: string[], postTitle: string, postExc
               <a href="${postUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Read More</a>
             </div>
             <p style="font-size: 14px; color: #64748b; margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-              You are receiving this because you subscribed to the SaaS Boilerplate newsletter.
+              You are receiving this because you subscribed to the ${siteConfig.name} newsletter.
             </p>
           </div>
         `,

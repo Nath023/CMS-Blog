@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Pagination } from '@/components/blog/Pagination';
 import { BlogCTA } from '@/components/blog/BlogCTA';
 import { Metadata } from 'next';
+import { siteConfig } from '@/config/site';
 
 export async function generateStaticParams() {
   const tags = await getTags();
@@ -19,7 +20,7 @@ export async function generateMetadata(props: { params: { slug: string } }): Pro
   if (!tag) return {};
 
   return {
-    title: `Posts tagged "${tag.name}" | SaaS Blog`,
+    title: `Posts tagged "${tag.name}" | ${siteConfig.name} Blog`,
     description: `Browse articles tagged with ${tag.name}.`,
   };
 }

@@ -23,7 +23,7 @@ export default function TermsOfServicePage() {
 
           <div className="prose prose-slate dark:prose-invert prose-lg max-w-none">
             <p>
-              Welcome to <strong>SaaS Boilerplate</strong>. These Terms of Service (&quot;Terms&quot;) govern your access to and use of our website, 
+              Welcome to <strong>{siteConfig.name}</strong>. These Terms of Service (&quot;Terms&quot;) govern your access to and use of our website, 
               services, and applications. By accessing or using our services, you agree to be bound by these Terms and our Privacy Policy.
             </p>
 
