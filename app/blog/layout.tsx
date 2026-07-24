@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { getSettings } from '@/lib/blog/queries';
+import { getSettings } from '@/lib/fetch';
 import { siteConfig } from '@/config/site';
+import { featuresConfig } from '@/config/features';
 
 export default async function BlogLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
@@ -26,7 +27,7 @@ export default async function BlogLayout({ children }: { children: React.ReactNo
               Admin
             </Link>
             <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-800 hidden sm:block"></div>
-            <ThemeToggle />
+            {featuresConfig.enableDarkMode && <ThemeToggle />}
             <a href={siteConfig.url} target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2 sm:px-6 sm:py-2.5 rounded-full hover:bg-primary dark:hover:bg-primary hover:text-white transition-all shadow-sm flex items-center whitespace-nowrap">
               Main Site <span className="ml-1.5 hidden sm:inline">&rarr;</span>
             </a>

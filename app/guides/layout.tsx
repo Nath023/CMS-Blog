@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { getSettings } from '@/lib/blog/queries';
+import { getSettings } from '@/lib/fetch';
 import { siteConfig } from '@/config/site';
+import { featuresConfig } from '@/config/features';
 
 export default async function GuidesLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
@@ -18,7 +19,7 @@ export default async function GuidesLayout({ children }: { children: React.React
           </span>
         </Link>
         <div className="flex items-center gap-6 md:gap-8">
-          <ThemeToggle />
+          {featuresConfig.enableDarkMode && <ThemeToggle />}
           <Link href="/blog" className="hidden sm:block text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-secondary transition-colors">
             Blog
           </Link>

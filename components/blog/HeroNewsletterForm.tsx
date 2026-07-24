@@ -1,32 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { subscribeToNewsletter } from '@/lib/newsletter/actions';
+import { useNewsletter } from '@/hooks/useNewsletter';
 import Image from 'next/image';
 
 export function HeroNewsletterForm() {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ text: '', type: '' });
-    
-    const formData = new FormData(e.currentTarget);
-    const result = await subscribeToNewsletter(formData);
-    
-    if (result.error) {
-      setMessage({ text: result.error, type: 'error' });
-    } else if (result.success) {
-      setMessage({ text: result.success, type: 'success' });
-      (e.target as HTMLFormElement).reset();
-    }
-    
-    setLoading(false);
-  };
+  const { loading, message, handleSubmit } = useNewsletter();
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-10 max-w-xl">

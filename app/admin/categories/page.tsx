@@ -1,15 +1,15 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { getCategoriesAdmin } from '@/lib/database';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCategoriesPage() {
-  const supabase = createAdminClient();
+
   let categories: any[] = [];
 
   try {
-    const { data } = await supabase.from('categories').select('*').order('name');
+    const data = await getCategoriesAdmin();
     categories = data || [];
   } catch (e) {
     console.error('Error fetching categories:', e);

@@ -1,7 +1,6 @@
-import { getSettings } from '@/lib/blog/queries';
+import { getSettings } from '@/lib/fetch';
 import { SettingsForm } from '@/components/admin/SettingsForm';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { saveGlobalSettings } from '@/lib/database';
 import { revalidatePath } from 'next/cache';
 
 export default async function SettingsPage() {
@@ -10,42 +9,9 @@ export default async function SettingsPage() {
   async function saveSettings(newSettings: Record<string, any>) {
     'use server';
     
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {}
-          },
-        },
-      }
-    )
-
     try {
-      const keys = Object.keys(newSettings);
-      
-      for (const key of keys) {
-        const { error } = await supabase
-          .from('settings')
-          .upsert({ 
-            key, 
-            value: newSettings[key] 
-          }, { onConflict: 'key' });
-          
-        if (error) throw error;
-      }
-
+      await saveGlobalSettings(newSettings);
       revalidatePath('/', 'layout');
-      
       return { success: true };
     } catch (e: any) {
       console.error('Save settings error:', e);

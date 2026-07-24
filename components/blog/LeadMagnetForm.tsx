@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { downloadLeadMagnet } from '@/lib/newsletter/leadMagnetActions';
+import { downloadLeadMagnet } from '@/lib/database';
 import Image from 'next/image';
 
 interface LeadMagnetFormProps {

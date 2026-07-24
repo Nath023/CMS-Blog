@@ -1,19 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
+import { getTagById } from '@/lib/database';
 import { TagForm } from '@/components/admin/TagForm';
 import NotFound from '@/app/not-found';
 
 export default async function EditTagPage(props: { params: { id: string } }) {
   const params = props.params;
   const id = params.id;
-  const supabase = createClient();
-
-  let tag = null;
-  try {
-    const { data } = await supabase.from('tags').select('*').eq('id', id).single();
-    tag = data;
-  } catch (e) {
-    console.error('Error fetching tag:', e);
-  }
+  const tag = await getTagById(id);
 
   if (!tag) {
     return <NotFound />;

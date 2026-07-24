@@ -1,15 +1,15 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { getTagsAdmin } from '@/lib/database';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminTagsPage() {
-  const supabase = createAdminClient();
+
   let tags: any[] = [];
 
   try {
-    const { data } = await supabase.from('tags').select('*').order('name');
+    const data = await getTagsAdmin();
     tags = data || [];
   } catch (e) {
     console.error('Error fetching tags:', e);

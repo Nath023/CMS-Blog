@@ -5,7 +5,7 @@ export const seoConfig = {
   defaultTitle: `Blog | ${siteConfig.name}`,
   titleTemplate: `%s | ${siteConfig.name}`,
   description: siteConfig.description,
-  ogImage: "/og-default.jpg",
+  ogImage: "/dummy.jpg",
   twitterCard: 'summary_large_image',
   locale: 'en_US',
 };

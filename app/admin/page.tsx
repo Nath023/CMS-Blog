@@ -1,105 +1,23 @@
-import { createClient } from '@/lib/supabase/server';
+import { getAdminDashboardStats } from '@/lib/database';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { DashboardCharts } from '@/components/admin/DashboardCharts';
-import { subMonths, format } from 'date-fns';
+import { POST_STATUS, LIMITS } from '@/constants';
+import dynamic from 'next/dynamic';
+
+const DashboardCharts = dynamic(
+  () => import('@/components/admin/DashboardCharts').then((mod) => mod.DashboardCharts),
+  { ssr: false, loading: () => <div className="h-64 bg-slate-100 dark:bg-slate-800 rounded-3xl animate-pulse" /> }
+);
+
 
 export default async function AdminDashboard() {
-  const supabase = createClient();
+  const { 
+    totalPosts, publishedPosts, draftPosts, archivedPosts, totalViews,
+    statusData, monthlyData, recentPosts, popularPosts 
+  } = await getAdminDashboardStats();
 
-  let totalPosts = 0;
-  let publishedPosts = 0;
-  let draftPosts = 0;
-  let archivedPosts = 0;
-  let totalViews = 0;
-  let recentPosts: any[] = [];
-  let popularPosts: any[] = [];
-  
-  // For charts
-  const statusData = [
-    { name: 'Published', value: 0 },
-    { name: 'Draft', value: 0 },
-    { name: 'Archived', value: 0 },
-  ];
-  
-  let monthlyData: { month: string; posts: number }[] = [];
-
-  try {
-    // Get total stats
-    const { count: tP } = await supabase.from('posts').select('*', { count: 'exact', head: true });
-    totalPosts = tP || 0;
-
-    const { count: pP } = await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('status', 'published');
-    publishedPosts = pP || 0;
-
-    const { count: dP } = await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('status', 'draft');
-    draftPosts = dP || 0;
-
-    const { count: aP } = await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('status', 'archived');
-    archivedPosts = aP || 0;
-
-    statusData[0].value = publishedPosts;
-    statusData[1].value = draftPosts;
-    statusData[2].value = archivedPosts;
-
-    // Get Total Views
-    const { data: viewsData } = await supabase.from('posts').select('view_count');
-    if (viewsData) {
-      totalViews = viewsData.reduce((acc, post) => acc + (post.view_count || 0), 0);
-    }
-
-    // Get recent posts
-    const { data: rP } = await supabase
-      .from('posts')
-      .select('id, title, status, created_at')
-      .order('created_at', { ascending: false })
-      .limit(5);
-    recentPosts = rP || [];
-
-    // Get popular posts
-    const { data: popP } = await supabase
-      .from('posts')
-      .select('id, title, status, view_count')
-      .order('view_count', { ascending: false })
-      .limit(5);
-    popularPosts = popP || [];
-
-    // Calculate monthly data for the last 6 months
-    const sixMonthsAgo = subMonths(new Date(), 5);
-    sixMonthsAgo.setDate(1);
-    sixMonthsAgo.setHours(0, 0, 0, 0);
-
-    const { data: allPosts } = await supabase
-      .from('posts')
-      .select('created_at')
-      .gte('created_at', sixMonthsAgo.toISOString());
-      
-    if (allPosts) {
-      // Initialize array with last 6 months
-      const months = Array.from({ length: 6 }).map((_, i) => {
-        const d = subMonths(new Date(), 5 - i);
-        return {
-          month: format(d, 'MMM yyyy'),
-          posts: 0
-        };
-      });
-
-      // Count posts per month
-      allPosts.forEach(post => {
-        const postMonth = format(new Date(post.created_at), 'MMM yyyy');
-        const monthIndex = months.findIndex(m => m.month === postMonth);
-        if (monthIndex !== -1) {
-          months[monthIndex].posts += 1;
-        }
-      });
-      
-      monthlyData = months;
-    }
-
-  } catch (e: any) {
-    if (e?.code !== '42P01') console.error('Error fetching admin dashboard stats:', e);
-  }
-
+ 
+ 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">

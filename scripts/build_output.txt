@@ -1,0 +1,25 @@
+
+> saas-boilerplate-blog@1.0.0 build
+> SKIP_ENV_VALIDATION=true NODE_ENV=production next build
+
+  ▲ Next.js 14.2.15
+  - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+
+> Build error occurred
+Error: ENOENT: no such file or directory, open '/app/applet/.next/server/pages-manifest.json'
+    at async open (node:internal/fs/promises:639:25)
+    at async Object.readFile (node:internal/fs/promises:1252:14)
+    at async readManifest (/app/applet/node_modules/next/dist/build/index.js:164:23)
+    at async /app/applet/node_modules/next/dist/build/index.js:1039:35
+    at async Span.traceAsyncFn (/app/applet/node_modules/next/dist/trace/trace.js:154:20)
+    at async build (/app/applet/node_modules/next/dist/build/index.js:364:9) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/app/applet/.next/server/pages-manifest.json'
+}

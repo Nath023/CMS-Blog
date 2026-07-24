@@ -1,19 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCategoryById } from '@/lib/database';
 import { CategoryForm } from '@/components/admin/CategoryForm';
 import NotFound from '@/app/not-found';
 
 export default async function EditCategoryPage(props: { params: { id: string } }) {
   const params = props.params;
   const id = params.id;
-  const supabase = createClient();
-
-  let category = null;
-  try {
-    const { data } = await supabase.from('categories').select('*').eq('id', id).single();
-    category = data;
-  } catch (e) {
-    console.error('Error fetching category:', e);
-  }
+  const category = await getCategoryById(id);
 
   if (!category) {
     return <NotFound />;

@@ -1,21 +1,16 @@
-import { createClient } from '@/lib/supabase/server';
+import { getPopularPosts } from '@/lib/database';
 import Link from 'next/link';
 import Image from 'next/image';
+import { POST_STATUS, LIMITS } from '@/constants';
+import { Card } from '@/components/ui/Card';
 
 export async function PopularPosts(): Promise<JSX.Element | null> {
-  const supabase = await createClient();
-  
-  const { data: popular } = await supabase
-    .from('posts')
-    .select('id, title, slug, excerpt, featured_image_url, view_count, category:categories(name)')
-    .eq('status', 'published')
-    .order('view_count', { ascending: false })
-    .limit(3);
+  const popular = await getPopularPosts();
 
   if (!popular || popular.length === 0) return null;
 
   return (
-    <div className="bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/5 rounded-[2rem] p-6 shadow-sm mt-8 transition-all duration-500 hover:shadow-lg">
+    <Card className="mt-8 hover:shadow-lg">
       <h3 className="text-2xl font-serif text-slate-900 dark:text-white mb-6">Popular Articles</h3>
       <div className="flex flex-col gap-6">
         {popular.map((post) => (
@@ -26,6 +21,7 @@ export async function PopularPosts(): Promise<JSX.Element | null> {
                   src={post.featured_image_url} 
                   alt={post.title} 
                   fill 
+                  sizes="80px"
                   className="object-cover group-hover:scale-110 transition-transform duration-500" 
                 />
               ) : (
@@ -45,6 +41,6 @@ export async function PopularPosts(): Promise<JSX.Element | null> {
           </Link>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

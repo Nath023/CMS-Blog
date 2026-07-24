@@ -1,4 +1,4 @@
-import { getPosts } from '@/lib/blog/queries';
+import { getPosts } from '@/lib/database';
 import { siteConfig } from '@/config/site';
 
 export async function GET() {

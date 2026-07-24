@@ -15,7 +15,7 @@ export function AuthorBio({ name, bio, socialLink, imageUrl }: AuthorBioProps) {
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 sm:p-8 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 my-12">
       <Link href={`/blog/author/${encodeURIComponent(name || 'Unknown')}`} className="shrink-0 relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-800 border-2 border-white dark:border-slate-700 shadow-sm hover:ring-2 hover:ring-blue-500 transition-all">
         {imageUrl ? (
-          <Image src={imageUrl} alt={name || 'Author'} fill className="object-cover" />
+          <Image src={imageUrl} alt={name || 'Author'} fill sizes="96px" className="object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-2xl">
             {(name || 'A').charAt(0).toUpperCase()}

@@ -1,11 +1,11 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createCategoryAdmin, updateCategoryAdmin, deleteCategoryAdmin } from '@/lib/database';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 export async function saveCategory(formData: FormData) {
-  const supabase = createClient();
+
   const id = formData.get('id') as string;
   const name = formData.get('name') as string;
   const slug = formData.get('slug') as string;
@@ -22,10 +22,10 @@ export async function saveCategory(formData: FormData) {
   };
 
   if (id) {
-    const { error } = await supabase.from('categories').update(payload).eq('id', id);
+    const { error } = await updateCategoryAdmin(id, payload);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await supabase.from('categories').insert(payload);
+    const { error } = await createCategoryAdmin(payload);
     if (error) throw new Error(error.message);
   }
 
@@ -34,8 +34,8 @@ export async function saveCategory(formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
-  const supabase = createClient();
-  const { error } = await supabase.from('categories').delete().eq('id', id);
+
+  const { error } = await deleteCategoryAdmin(id);
   if (error) throw new Error(error.message);
   revalidatePath('/admin/categories');
   return { success: true };

@@ -1,19 +1,21 @@
+import { env } from '@/config/env';
+
 export const siteConfig = {
   name: "SaaS Boilerplate",
-  description: "Practical web design, SEO, and digital marketing insights for forward-thinking businesses.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com",
+  description: "A modern SaaS boilerplate for forward-thinking businesses. Build faster and scale better.",
+  url: env.NEXT_PUBLIC_APP_URL || "https://your-domain.com",
   contact: {
-    email: "info@example.com",
+    email: "hello@example.com",
   },
   company: {
-    name: "SaaS Boilerplate",
+    name: "SaaS Boilerplate Inc.",
     foundedDate: "2026",
   },
   authorBio: {
-    name: 'SaaS Boilerplate',
-    bio: 'We are a digital agency specializing in modern web development, SEO, and marketing strategies. We help businesses grow their online presence with cutting-edge technology.',
+    name: 'Admin User',
+    bio: 'This is a generic author bio. Replace this text with your own author biography in the configuration file.',
     socialLink: 'https://example.com',
-    imageUrl: '/og-default.jpg'
+    imageUrl: '/dummy.jpg'
   }
 };
 

@@ -1,4 +1,4 @@
-import { getCategories } from '@/lib/blog/queries';
+import { getCategories } from '@/lib/database';
 import { PostForm } from '@/components/admin/PostForm';
 import Link from 'next/link';
 

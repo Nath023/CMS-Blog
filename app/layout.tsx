@@ -4,15 +4,18 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Footer } from '@/components/layout/Footer';
 import { defaultMetadata } from '@/config/seo';
+import { Analytics } from '@/components/Analytics';
 
 const inter = Inter({ 
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
+  display: 'swap',
 });
 
 export const metadata: Metadata = defaultMetadata;
@@ -34,6 +37,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

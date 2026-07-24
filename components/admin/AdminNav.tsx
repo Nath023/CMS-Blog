@@ -2,38 +2,38 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import { cn } from '@/utils';
+import { signOut } from '@/lib/database';
 import { useRouter } from 'next/navigation';
 import { LayoutDashboard, FileText, Folder, Tag, Image as ImageIcon, Users, BookOpen, Settings, LogOut } from 'lucide-react';
+import { ROUTES } from '@/constants';
 
 export function AdminNav() {
   const pathname = usePathname();
   const router = useRouter();
 
-  if (pathname === '/admin/login') return null;
+  if (pathname === ROUTES.ADMIN.LOGIN) return null;
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/admin/login');
+    await signOut();
+    router.push(ROUTES.ADMIN.LOGIN);
   };
 
   const navItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Posts', href: '/admin/posts', icon: FileText },
-    { name: 'Categories', href: '/admin/categories', icon: Folder },
-    { name: 'Tags', href: '/admin/tags', icon: Tag },
-    { name: 'Media', href: '/admin/media', icon: ImageIcon },
-    { name: 'Subscribers', href: '/admin/subscribers', icon: Users },
-    { name: 'Lead Magnets', href: '/admin/lead-magnets', icon: BookOpen },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Dashboard', href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
+    { name: 'Posts', href: ROUTES.ADMIN.POSTS, icon: FileText },
+    { name: 'Categories', href: ROUTES.ADMIN.CATEGORIES, icon: Folder },
+    { name: 'Tags', href: ROUTES.ADMIN.TAGS, icon: Tag },
+    { name: 'Media', href: ROUTES.ADMIN.MEDIA, icon: ImageIcon },
+    { name: 'Subscribers', href: ROUTES.ADMIN.SUBSCRIBERS, icon: Users },
+    { name: 'Lead Magnets', href: ROUTES.ADMIN.LEAD_MAGNETS, icon: BookOpen },
+    { name: 'Settings', href: ROUTES.ADMIN.SETTINGS, icon: Settings },
   ];
 
   return (
     <nav className="flex md:flex-col gap-2 sm:gap-1 text-sm font-medium overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0">
       {navItems.map((item) => {
-        const isActive = item.href === '/admin' ? pathname === '/admin' : pathname?.startsWith(item.href);
+        const isActive = item.href === ROUTES.ADMIN.DASHBOARD ? pathname === ROUTES.ADMIN.DASHBOARD : pathname?.startsWith(item.href);
         const Icon = item.icon;
         
         return (

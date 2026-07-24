@@ -1,14 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { getLeadMagnetById } from '@/lib/database';
 import { notFound } from 'next/navigation';
 import EditLeadMagnetForm from './EditLeadMagnetForm';
 
 export default async function EditLeadMagnetPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
-  const { data: magnet } = await supabase
-    .from('lead_magnets')
-    .select('*')
-    .eq('id', params.id)
-    .single();
+  const magnet = await getLeadMagnetById(params.id);
 
   if (!magnet) {
     notFound();

@@ -1,4 +1,5 @@
-import { getPostBySlug, getPosts, getSettings } from '@/lib/blog/queries';
+import { getPosts } from '@/lib/database';
+import { getPostBySlug, getSettings } from '@/lib/fetch';
 import NotFound from '@/app/not-found';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -8,7 +9,6 @@ import { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
-import { TableOfContents } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { NewsletterForm } from '@/components/blog/NewsletterForm';
 import { ViewTracker } from '@/components/blog/ViewTracker';
@@ -19,6 +19,11 @@ import { CloseButton } from '@/components/blog/CloseButton';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 
 import { siteConfig } from '@/config/site';
+import { featuresConfig } from '@/config/features';
+import dynamic from 'next/dynamic';
+
+const TableOfContents = dynamic(() => import('@/components/blog/TableOfContents').then(mod => mod.TableOfContents));
+const Comments = dynamic(() => import('@/components/blog/Comments').then(mod => mod.Comments));
 
 export async function generateStaticParams() {
   const { data: posts } = await getPosts(1, { status: 'published' });
@@ -31,8 +36,8 @@ export async function generateMetadata(props: { params: { slug: string } }): Pro
   if (!post || post.status !== 'published') return {};
   const title = post.meta_title || post.title;
   const description = post.meta_description || post.excerpt || '';
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`;
-  const imageUrl = post.og_image_url || post.featured_image_url || `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.jpg`;
+  const url = `${siteConfig.url}/blog/${post.slug}`;
+  const imageUrl = post.og_image_url || post.featured_image_url || `${siteConfig.url}/dummy.jpg`;
   return {
     title, description, alternates: { canonical: url },
     openGraph: { title, description, url, type: 'article', publishedTime: post.published_at || post.created_at, authors: [post.author_name || settings.default_author || siteConfig.authorBio.name], images: [{ url: imageUrl }] },
@@ -60,7 +65,7 @@ export default async function BlogPostPage(props: { params: { slug: string } }) 
 
   return (
     <main className="flex-1 w-full bg-slate-50 dark:bg-slate-950/50 min-h-screen relative">
-      <ReadingProgressBar />
+      {featuresConfig.enableReadingTime && <ReadingProgressBar />}
       <CloseButton />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
@@ -70,45 +75,71 @@ export default async function BlogPostPage(props: { params: { slug: string } }) 
             <div className="text-lg font-medium text-slate-600 dark:text-slate-400 mb-6">By {post.author_name || settings.default_author || siteConfig.authorBio.name}</div>
             <div className="flex justify-center mt-6 items-center gap-4">
               <ShareButtons 
-                url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'}/blog/${post.slug}`} 
+                url={`${siteConfig.url || 'https://example.com'}/blog/${post.slug}`} 
                 title={post.title} 
               />
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                {post.view_count && post.view_count > 50 ? `${post.view_count} views` : ''}
-              </span>
+              {featuresConfig.enableViewCounter && (
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  {post.view_count && post.view_count > 50 ? `${post.view_count} views` : ''}
+                </span>
+              )}
             </div>
           </header>
-          <ViewTracker postId={post.id} />
+          {featuresConfig.enableViewCounter && <ViewTracker postId={post.id} />}
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 max-w-6xl mx-auto relative">
             <div className="flex-1 max-w-3xl w-full">
               <div className="prose prose-slate dark:prose-invert prose-lg max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>{post.content || ''}</ReactMarkdown>
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]} 
+                  rehypePlugins={[rehypeSlug]}
+                  components={{
+                    img: (props) => (
+                      <span className="block relative w-full aspect-video my-8 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+                        <Image
+                          src={props.src || ''}
+                          alt={props.alt || ''}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </span>
+                    ),
+                  }}
+                >
+                  {post.content || ''}
+                </ReactMarkdown>
               </div>
               
-              {post.lead_magnet && (
+              {featuresConfig.enableLeadMagnets && post.lead_magnet && (
                 <LeadMagnetForm magnet={post.lead_magnet} postId={post.id} />
               )}
 
-              <AuthorBio 
-                name={post.author_name || settings.default_author || siteConfig.authorBio.name} 
-                bio={siteConfig.authorBio.bio} 
-                socialLink={siteConfig.authorBio.socialLink}
-                imageUrl={siteConfig.authorBio.imageUrl}
-              />
+              {featuresConfig.enableAuthorBio && (
+                <AuthorBio 
+                  name={post.author_name || settings.default_author || siteConfig.authorBio.name} 
+                  bio={siteConfig.authorBio.bio} 
+                  socialLink={siteConfig.authorBio.socialLink}
+                  imageUrl={siteConfig.authorBio.imageUrl}
+                />
+              )}
 
               <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
                 <ShareButtons 
-                  url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'}/blog/${post.slug}`} 
+                  url={`${siteConfig.url || 'https://example.com'}/blog/${post.slug}`} 
                   title={post.title} 
                 />
               </div>
-              <div className="mt-16">
-                <NewsletterForm source="article_footer" postId={post.id} />
-              </div>
+              {featuresConfig.enableNewsletter && (
+                <div className="mt-16">
+                  <NewsletterForm source="article_footer" postId={post.id} />
+                </div>
+              )}
               
-              {relatedPosts.length > 0 && (
+              {featuresConfig.enableRelatedPosts && relatedPosts.length > 0 && (
                 <RelatedPosts posts={relatedPosts} />
               )}
+
+              {featuresConfig.enableComments && <Comments postId={post.id} />}
             </div>
 
             <aside className="w-full lg:w-72 shrink-0">

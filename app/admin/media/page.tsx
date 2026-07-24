@@ -1,29 +1,24 @@
-import { createAdminClient } from '@/lib/supabase/server';
-import MediaGrid from './MediaGrid';
+import { getMediaFilesAdmin } from '@/lib/database';
+import nextDynamic from 'next/dynamic';
+
+const MediaGrid = nextDynamic(() => import('./MediaGrid'), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-slate-100 dark:bg-slate-800 rounded-3xl animate-pulse" />
+});
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminMediaPage() {
-  const supabase = createAdminClient();
-  
   let media: any[] = [];
   try {
-    const { data, error } = await supabase.storage.from('blog-images').list();
-    if (data) {
-      media = data
-        .filter((f: any) => f.name !== '.emptyFolderPlaceholder' && f.metadata)
-        .map((f: any) => {
-          const { data: { publicUrl } } = supabase.storage.from('blog-images').getPublicUrl(f.name);
-          return {
-            id: f.id,
-            file_url: publicUrl,
-            file_name: f.name,
-            created_at: f.created_at,
-            size: f.metadata?.size
-          };
-        });
-      media.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    }
+    const data = await getMediaFilesAdmin();
+    media = data.map((f: any) => ({
+      id: f.name,
+      file_url: f.url,
+      file_name: f.name,
+      created_at: f.created_at || new Date().toISOString()
+    }));
+    media.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   } catch (err) {
     console.error("Error fetching media:", err);
   }

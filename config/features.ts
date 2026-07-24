@@ -1,8 +1,12 @@
 export const featuresConfig = {
   enableNewsletter: true,
-  enableViewTracking: true,
+  enableComments: false,
+  enableAnalytics: true,
+  enableReadingTime: true,
+  enableViewCounter: true,
+  enableDarkMode: true,
   enableRelatedPosts: true,
+  enableSearch: true,
   enableLeadMagnets: true,
   enableAuthorBio: true,
-  enableReadingProgress: true,
 };

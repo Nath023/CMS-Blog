@@ -1,7 +1,9 @@
-import { getPosts } from '@/lib/blog/queries';
+import { getPosts } from '@/lib/database';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Pagination } from '@/components/blog/Pagination';
+import { Suspense } from 'react';
+
 import { SearchInput } from '@/components/blog/SearchInput';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
@@ -46,7 +48,7 @@ export default async function SearchPage(props: { searchParams: { q?: string, pa
                 <Link href={`/blog/${post.slug}`} key={post.id} className="group flex flex-col h-full">
                   <div className="w-full aspect-[4/3] bg-slate-200 rounded-2xl mb-6 overflow-hidden relative shadow-sm transition-shadow group-hover:shadow-md">
                     {post.featured_image_url ? (
-                      <Image src={post.featured_image_url} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
+                      <Image src={post.featured_image_url} alt={post.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200"></div>
                     )}
@@ -83,7 +85,7 @@ export default async function SearchPage(props: { searchParams: { q?: string, pa
             )}
 
             <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-8">
-              <Pagination currentPage={page} totalItems={count} />
+              <Suspense fallback={<div className="h-10" />}><Pagination currentPage={page} totalItems={count} /></Suspense>
             </div>
           </>
         ) : (

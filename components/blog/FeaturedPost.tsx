@@ -1,16 +1,18 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { PostWithCategoryAndTags } from '@/lib/blog/queries';
+import { PostWithCategoryAndTags } from '@/lib/database';
 import { Image as ImageIcon } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { Card } from '@/components/ui/Card';
 
 export function FeaturedPost({ post, defaultAuthor }: { post: PostWithCategoryAndTags, defaultAuthor?: string }) {
   return (
-    <Link href={`/blog/${post.slug}`} className="group flex flex-col md:flex-row gap-8 lg:gap-12 items-center cursor-pointer bg-white dark:bg-[#0a0a0a] rounded-[2rem] border border-gray-100 dark:border-white/5 p-4 md:p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:border-primary/30">
-      <div className="w-full md:w-1/2 aspect-[4/3] bg-slate-100 dark:bg-slate-800 rounded-3xl overflow-hidden relative">
+    <Link href={`/blog/${post.slug}`} className="group cursor-pointer">
+      <Card className="flex flex-col md:flex-row gap-8 lg:gap-12 items-center p-4 md:p-6 hover:-translate-y-2 hover:shadow-xl hover:border-primary/30">
+        <div className="w-full md:w-1/2 aspect-[4/3] bg-slate-100 dark:bg-slate-800 rounded-3xl overflow-hidden relative">
         {post.featured_image_url ? (
-          <Image src={post.featured_image_url} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
+          <Image src={post.featured_image_url} alt={post.title} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">
              <ImageIcon className="w-16 h-16 text-slate-300 dark:text-slate-600" />
@@ -45,6 +47,7 @@ export function FeaturedPost({ post, defaultAuthor }: { post: PostWithCategoryAn
           {post.excerpt}
         </p>
       </div>
+      </Card>
     </Link>
   );
 }

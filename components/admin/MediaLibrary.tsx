@@ -4,40 +4,26 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { createClient } from '@/lib/supabase/client';
-
+import { getMediaFilesClient } from '@/lib/database';
 export function MediaLibrary({ onSelect, onCancel }: { onSelect: (url: string) => void, onCancel: () => void }) {
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [uploading, setUploading] = useState(false);
 
-  const supabase = createClient();
+  
 
   const fetchMedia = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.storage.from('blog-images').list();
-      if (data) {
-        let files = data
-          .filter((f: any) => f.name !== '.emptyFolderPlaceholder' && f.metadata)
-          .map((f: any) => {
-            const { data: { publicUrl } } = supabase.storage.from('blog-images').getPublicUrl(f.name);
-            return {
-              id: f.id,
-              file_url: publicUrl,
-              file_name: f.name,
-              created_at: f.created_at
-            };
-          });
-        
-        files.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        
-        if (search) {
-          files = files.filter(f => f.file_name.toLowerCase().includes(search.toLowerCase()));
-        }
-        setMedia(files);
-      }
+      let files = await getMediaFilesClient();
+      files = files.filter((f: any) => search ? f.name.toLowerCase().includes(search.toLowerCase()) : true);
+      setMedia(files.map((f: any) => ({
+        id: f.name,
+        file_url: f.url,
+        file_name: f.name,
+        created_at: new Date().toISOString()
+      })));
     } catch (err) {
       console.error(err);
     }

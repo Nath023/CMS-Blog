@@ -1,11 +1,12 @@
 import { Resend } from 'resend';
 import { siteConfig } from '@/config/site';
+import { env } from '@/config/env';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = siteConfig.contact.email;
+const resend = new Resend(env.RESEND_API_KEY);
+const FROM_EMAIL = env.EMAIL_FROM;
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!env.RESEND_API_KEY) {
     console.log('No RESEND_API_KEY found, skipping welcome email.');
     return;
   }
@@ -32,7 +33,7 @@ export async function sendWelcomeEmail(to: string, firstName?: string) {
 }
 
 export async function sendLeadMagnetEmail(to: string, magnetTitle: string, fileUrl: string, firstName?: string) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!env.RESEND_API_KEY) {
     console.log('No RESEND_API_KEY found, skipping lead magnet email.');
     return;
   }
@@ -65,7 +66,7 @@ export async function sendLeadMagnetEmail(to: string, magnetTitle: string, fileU
 }
 
 export async function sendBlogPostEmail(to: string[], postTitle: string, postExcerpt: string, postSlug: string, postImageUrl: string | null) {
-  if (!process.env.RESEND_API_KEY || to.length === 0) {
+  if (!env.RESEND_API_KEY || to.length === 0) {
     console.log('No RESEND_API_KEY found or empty subscriber list, skipping blog post email.');
     return;
   }

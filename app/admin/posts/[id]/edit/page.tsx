@@ -1,28 +1,15 @@
-import { getCategories } from '@/lib/blog/queries';
+import { getCategories } from '@/lib/database';
 import { PostForm } from '@/components/admin/PostForm';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getPostForEdit } from '@/lib/database';
 import NotFound from '@/app/not-found';
 
 export default async function EditPostPage(props: { params: { id: string } }) {
   const params = props.params;
   const categories = await getCategories();
-  const supabase = createClient();
-
-  let post: any = null;
-  let initialTags = '';
-  
-  try {
-    const { data: p } = await supabase.from('posts').select('*').eq('id', params.id).single();
-    post = p;
-    
-    if (post) {
-      const { data: tagsData } = await supabase.from('post_tags').select('tag:tags(name)').eq('post_id', post.id);
-      initialTags = tagsData?.map((t: any) => t.tag.name).join(', ') || '';
-    }
-  } catch (e: any) {
-    if (e?.code !== '42P01') console.error('Error fetching post for edit:', e);
-  }
+  const result = await getPostForEdit(params.id);
+  const post = result?.post;
+  const initialTags = result?.tags || '';
 
   if (!post) return <NotFound />;
 

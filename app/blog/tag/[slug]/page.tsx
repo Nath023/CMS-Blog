@@ -1,8 +1,10 @@
-import { getPostsByTag, getTagBySlug, getTags } from '@/lib/blog/queries';
+import { getPostsByTag, getTagBySlug, getTags } from '@/lib/database';
 import NotFound from '@/app/not-found';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Pagination } from '@/components/blog/Pagination';
+import { Suspense } from 'react';
+
 import { BlogCTA } from '@/components/blog/BlogCTA';
 import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
@@ -71,7 +73,7 @@ export default async function TagPage(props: { params: { slug: string }, searchP
         <p className="text-slate-500 dark:text-slate-400 py-12 text-center">No posts found with this tag.</p>
       )}
 
-      <Pagination currentPage={page} totalItems={count} />
+      <Suspense fallback={<div className="h-10" />}><Pagination currentPage={page} totalItems={count} /></Suspense>
       
       <div className="max-w-2xl mx-auto mt-12">
         <BlogCTA />

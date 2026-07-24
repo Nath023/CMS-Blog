@@ -29,7 +29,7 @@ export default function DownloadForm({ magnet }: { magnet: any }) {
       if (result.fileUrl) {
         setTimeout(() => {
           const a = document.createElement('a');
-          a.href = result.fileUrl;
+          a.href = result.fileUrl || "";
           a.download = magnet.title + '.pdf';
           a.target = '_blank';
           document.body.appendChild(a);

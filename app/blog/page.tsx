@@ -1,9 +1,10 @@
-import { getPosts, getCategories, getSettings } from '@/lib/blog/queries';
+import { getPosts, getCategories } from '@/lib/database';
+import { getSettings } from '@/lib/fetch';
 import Link from 'next/link';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { BlogCTA } from '@/components/blog/BlogCTA';
-import PopularPostsWrapper from '@/components/blog/PopularPostsWrapper';
+import { PopularPosts } from '@/components/blog/PopularPosts';
 import { NewsletterForm } from '@/components/blog/NewsletterForm';
 import { SearchInput } from '@/components/blog/SearchInput';
 import { Pagination } from '@/components/blog/Pagination';
@@ -12,6 +13,7 @@ import { FeaturedPost } from '@/components/blog/FeaturedPost';
 import { RevealWrapper } from '@/components/RevealWrapper';
 import { HeroNewsletterForm } from '@/components/blog/HeroNewsletterForm';
 import { siteConfig } from '@/config/site';
+import { featuresConfig } from '@/config/features';
 
 export default async function BlogHomepage(props: { searchParams: { page?: string } }) {
   const searchParams = props.searchParams;
@@ -40,7 +42,7 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl font-sans">
               Actionable strategies, expert tutorials, and proven frameworks on web design, SEO, and digital growth delivered straight to your inbox.
             </p>
-            <HeroNewsletterForm />
+            {featuresConfig.enableNewsletter && <HeroNewsletterForm />}
           </div>
           <div className="lg:col-span-5 hidden lg:block relative">
             <div className="w-full aspect-[4/5] bg-gradient-to-tr from-slate-100 to-slate-200 dark:from-slate-800/50 dark:to-slate-900/50 rounded-[3rem] overflow-hidden relative shadow-2xl border border-white/20 dark:border-white/5">
@@ -119,7 +121,7 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
                     <Link href={`/blog/${post.slug}`} className="group flex flex-col h-full bg-white dark:bg-[#0a0a0a] rounded-3xl border border-gray-100 dark:border-white/5 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:border-primary/30">
                       <div className="w-full aspect-[4/3] bg-slate-100 dark:bg-slate-800 overflow-hidden relative">
                         {post.featured_image_url ? (
-                          <Image src={post.featured_image_url} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
+                          <Image src={post.featured_image_url} alt={post.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900"></div>
                         )}
@@ -161,9 +163,11 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
           <aside className="lg:col-span-4">
             <div className="sticky top-28 flex flex-col gap-10">
               
-              <RevealWrapper delay={0.2} className="bg-white dark:bg-[#0a0a0a] p-1.5 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 transition-all duration-500 hover:shadow-md hover:border-primary/30">
-                <SearchInput />
-              </RevealWrapper>
+              {featuresConfig.enableSearch && (
+                <RevealWrapper delay={0.2} className="bg-white dark:bg-[#0a0a0a] p-1.5 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 transition-all duration-500 hover:shadow-md hover:border-primary/30">
+                  <SearchInput />
+                </RevealWrapper>
+              )}
 
               <RevealWrapper delay={0.3}>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-5">Explore Topics</h4>
@@ -181,17 +185,22 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
               </RevealWrapper>
               
               <div className="mt-4 flex flex-col gap-8">
-                <RevealWrapper delay={0.4}>
-                  <NewsletterForm source="sidebar" title="Get Updates" description="Subscribe for the latest articles." />
-                </RevealWrapper>
+                {featuresConfig.enableNewsletter && (
+                  <RevealWrapper delay={0.4}>
+                    <NewsletterForm source="sidebar" title="Get Updates" description="Subscribe for the latest articles." />
+                  </RevealWrapper>
+                )}
                 <RevealWrapper delay={0.5}>
                   <Suspense fallback={<div className="h-40 bg-gray-100 dark:bg-gray-800 rounded-3xl animate-pulse"></div>}>
-                    <PopularPostsWrapper />
+                    {/* @ts-expect-error Async Server Component */}
+                    <PopularPosts />
                   </Suspense>
                 </RevealWrapper>
-                <RevealWrapper delay={0.6}>
-                  <BlogCTA className="" />
-                </RevealWrapper>
+                {featuresConfig.enableLeadMagnets && (
+                  <RevealWrapper delay={0.6}>
+                    <BlogCTA className="" />
+                  </RevealWrapper>
+                )}
               </div>
             </div>
           </aside>

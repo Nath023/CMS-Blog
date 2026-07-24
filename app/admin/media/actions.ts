@@ -1,17 +1,17 @@
 'use server';
 
-import { createAdminClient } from '@/lib/supabase/server';
+import { deleteMediaFileAdmin } from '@/lib/database';
 import { revalidatePath } from 'next/cache';
 
 export async function deleteMedia(id: string, file_url: string) {
-  const supabase = createAdminClient();
+
   
   // Extract filename from URL
   const fileName = file_url.split('/').pop();
   
   if (fileName) {
     // Attempt to delete from storage
-    await supabase.storage.from('blog-images').remove([fileName]);
+    await deleteMediaFileAdmin(fileName);
   }
 
   revalidatePath('/admin/media');

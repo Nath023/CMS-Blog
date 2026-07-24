@@ -1,15 +1,20 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { createPost, updatePost, deletePost } from '@/lib/blog/actions';
+import { createPost, updatePost, deletePost } from '@/lib/database';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { ImageUpload } from '@/components/admin/ImageUpload';
-import { MarkdownEditor } from '@/components/admin/MarkdownEditor';
 import { SEOAssistant } from '@/components/admin/SEOAssistant';
 import { useRouter } from 'next/navigation';
 import { Save } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const MarkdownEditor = dynamic(
+  () => import('@/components/admin/MarkdownEditor').then(mod => mod.MarkdownEditor),
+  { ssr: false, loading: () => <div className="h-96 bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse" /> }
+);
 
 type Category = { id: string, name: string };
 type Post = any;

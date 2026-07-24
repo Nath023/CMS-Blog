@@ -2,8 +2,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { AdminNav } from '@/components/admin/AdminNav';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { getSettings } from '@/lib/blog/queries';
+import { getSettings } from '@/lib/fetch';
 import { siteConfig } from '@/config/site';
+import { featuresConfig } from '@/config/features';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
@@ -20,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </span>
           </Link>
           <div className="flex md:hidden items-center gap-2">
-             <ThemeToggle />
+             {featuresConfig.enableDarkMode && <ThemeToggle />}
              <a href="/blog" target="_blank" className="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                View Site &rarr;
              </a>
@@ -34,7 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="hidden md:flex flex-col gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">Theme</span>
-            <ThemeToggle />
+            {featuresConfig.enableDarkMode && <ThemeToggle />}
           </div>
           <a href="/blog" target="_blank" className="text-sm text-center font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-xl">
             View Live Site &rarr;

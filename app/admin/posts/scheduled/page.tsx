@@ -1,25 +1,13 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { getScheduledPosts } from '@/lib/database';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminScheduledPostsPage() {
-  const supabase = createAdminClient();
-  const now = new Date().toISOString();
-
   let posts: any[] = [];
   try {
-    const { data } = await supabase
-      .from('posts')
-      .select(`
-        id, title, slug, status, created_at, published_at,
-        category:categories(name)
-      `)
-      .eq('status', 'draft')
-      .gt('published_at', now)
-      .order('published_at', { ascending: true });
-      
+    const data = await getScheduledPosts();
     posts = data || [];
   } catch (e: any) {
     if (e?.code !== '42P01') console.error('Error fetching scheduled posts:', e);
