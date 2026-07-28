@@ -12,7 +12,7 @@ export default async function AdminCategoriesPage() {
     const data = await getCategoriesAdmin();
     categories = data || [];
   } catch (e) {
-    console.error('Error fetching categories:', e);
+    if (e?.message !== 'fetch failed' && !e?.message?.includes('ECONNREFUSED')) console.error('Error fetching categories:', e);
   }
 
   return (

@@ -10,7 +10,7 @@ export async function updateSession(request: NextRequest) {
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
   const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   
-  if (!url || url === 'YOUR_SUPABASE_URL' || url === 'https://127.0.0.1') {
+  if (!url || url === 'YOUR_SUPABASE_URL' || url.includes('127.0.0.1') || url.includes('your-project-ref')) {
     return supabaseResponse;
   }
 
@@ -37,9 +37,15 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    let user: any = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (err: any) {
+    if (err?.message !== 'fetch failed' && !err?.message?.includes('ECONNREFUSED')) {
+      console.error('Middleware getUser error:', err);
+    }
+  }
 
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isLoginRoute = request.nextUrl.pathname === '/admin/login'

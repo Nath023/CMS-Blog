@@ -12,7 +12,7 @@ export default async function AdminTagsPage() {
     const data = await getTagsAdmin();
     tags = data || [];
   } catch (e) {
-    console.error('Error fetching tags:', e);
+    if (e?.message !== 'fetch failed' && !e?.message?.includes('ECONNREFUSED')) console.error('Error fetching tags:', e);
   }
 
   return (

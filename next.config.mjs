@@ -15,6 +15,15 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'recharts', 'date-fns', 'motion'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/blog',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

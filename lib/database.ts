@@ -10,6 +10,11 @@ import { POST_STATUS, LIMITS, BUCKETS, SUBSCRIBER_STATUS } from '@/constants';
 import { env } from '@/config/env';
 import { subMonths, format } from 'date-fns';
 
+const isConfigured = !!env.NEXT_PUBLIC_SUPABASE_URL && 
+  env.NEXT_PUBLIC_SUPABASE_URL !== 'YOUR_SUPABASE_URL' && 
+  !env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project-ref') &&
+  !env.NEXT_PUBLIC_SUPABASE_URL.includes('127.0.0.1');
+
 
 
 async function sendBlogPostEmail(email: any, subject: string, link: string, ...args: any[]) {}
@@ -17,11 +22,18 @@ async function sendLeadMagnetEmail(email: string, subject: string, link: string,
 async function sendWelcomeEmail(email: string, name?: string | null) {}
 
 export async function signOut() {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createServerClient();
   await supabase.auth.signOut();
 }
 
 export async function getAdminDashboardStats() {
+  if (!isConfigured) {
+    return {
+      totalPosts: 0, publishedPosts: 0, draftPosts: 0, archivedPosts: 0, totalViews: 0,
+      recentPosts: [], popularPosts: [], statusData: [], monthlyData: []
+    };
+  }
   const supabase = createServerClient();
   let totalPosts = 0, publishedPosts = 0, draftPosts = 0, archivedPosts = 0, totalViews = 0;
   let recentPosts: any[] = [];
@@ -113,18 +125,21 @@ export async function getAdminDashboardStats() {
 }
 
 export async function getLeadMagnetById(id: string) {
+  if (!isConfigured) return null;
   const supabase = createServerClient();
   const { data } = await supabase.from('lead_magnets').select('*').eq('id', id).single();
   return data;
 }
 
 export async function getLeadMagnetsAdmin() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
   const { data } = await supabase.from('lead_magnets').select('*').order('created_at', { ascending: false });
   return data || [];
 }
 
 export async function getLeadMagnetBySlug(slug: string) {
+  if (!isConfigured) return null;
   const supabase = createAdminClient();
 
   const { data } = await supabase.from('lead_magnets').select('*').eq('slug', slug).eq('is_active', true).single();
@@ -132,18 +147,21 @@ export async function getLeadMagnetBySlug(slug: string) {
 }
 
 export async function getLeadMagnetsForGuides() {
+  if (!isConfigured) return [];
   const supabase = createServerClient();
   const { data } = await supabase.from('lead_magnets').select('*').eq('is_active', true).order('created_at', { ascending: false });
   return data || [];
 }
 
 export async function getTagById(id: string) {
+  if (!isConfigured) return null;
   const supabase = createServerClient();
   const { data } = await supabase.from('tags').select('*').eq('id', id).single();
   return data;
 }
 
 export async function getTagsAdmin() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
 
   const { data } = await supabase.from('tags').select('*').order('name');
@@ -151,12 +169,14 @@ export async function getTagsAdmin() {
 }
 
 export async function getCategoryById(id: string) {
+  if (!isConfigured) return null;
   const supabase = createServerClient();
   const { data } = await supabase.from('categories').select('*').eq('id', id).single();
   return data;
 }
 
 export async function getCategoriesAdmin() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
 
   const { data } = await supabase.from('categories').select('*').order('name');
@@ -164,6 +184,7 @@ export async function getCategoriesAdmin() {
 }
 
 export async function getMediaFilesClient() {
+  if (!isConfigured) return [];
   const supabase = createServerClient();
   const { data, error } = await supabase.storage.from(BUCKETS.BLOG_IMAGES).list();
   if (error || !data) return [];
@@ -175,6 +196,7 @@ export async function getMediaFilesClient() {
 }
 
 export async function getMediaFilesAdmin() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
 
   const { data, error } = await supabase.storage.from(BUCKETS.BLOG_IMAGES).list();
@@ -187,6 +209,7 @@ export async function getMediaFilesAdmin() {
 }
 
 export async function getPostForEdit(id: string) {
+  if (!isConfigured) return null;
   const supabase = createServerClient();
   const { data: p } = await supabase.from('posts').select('*').eq('id', id).single();
   if (!p) return null;
@@ -196,6 +219,7 @@ export async function getPostForEdit(id: string) {
 }
 
 export async function getAdminPosts(status?: string) {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
 
   let query = supabase
@@ -216,6 +240,7 @@ export async function getAdminPosts(status?: string) {
 }
 
 export async function getScheduledPosts() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
 
   const now = new Date().toISOString();
@@ -232,6 +257,7 @@ export async function getScheduledPosts() {
 }
 
 export async function getPopularPosts() {
+  if (!isConfigured) return [];
   const supabase = createServerClient();
   const { data } = await supabase
     .from('posts')
@@ -243,6 +269,7 @@ export async function getPopularPosts() {
 }
 
 export async function getSubscribersAdmin() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
 
   const { data } = await supabase
@@ -253,6 +280,7 @@ export async function getSubscribersAdmin() {
 }
 
 export async function recordPostView(postId: string, sessionId: string, userAgent: string) {
+  if (!isConfigured) return;
   const supabase = createServerClient();
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
   
@@ -279,6 +307,7 @@ export async function recordPostView(postId: string, sessionId: string, userAgen
 }
 
 export async function uploadMediaFile(file: File) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
 
   const fileExt = file.name.split('.').pop();
@@ -303,43 +332,53 @@ export async function uploadMediaFile(file: File) {
 }
 
 export async function createTagAdmin(payload: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('tags').insert(payload);
 }
 export async function updateTagAdmin(id: string, payload: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('tags').update(payload).eq('id', id);
 }
 export async function deleteTagAdmin(id: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('tags').delete().eq('id', id);
 }
 export async function createCategoryAdmin(payload: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('categories').insert(payload);
 }
 export async function updateCategoryAdmin(id: string, payload: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('categories').update(payload).eq('id', id);
 }
 export async function deleteCategoryAdmin(id: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('categories').delete().eq('id', id);
 }
 export async function deleteMediaFileAdmin(fileName: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.storage.from(BUCKETS.BLOG_IMAGES).remove([fileName]);
 }
 export async function deleteSubscriberAdmin(id: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('subscribers').delete().eq('id', id);
 }
 export async function updateSubscriberStatusAdmin(id: string, status: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('subscribers').update({ status }).eq('id', id);
 }
 
 export async function saveGlobalSettings(newSettings: Record<string, any>) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   const keys = Object.keys(newSettings);
   
@@ -356,6 +395,7 @@ export async function saveGlobalSettings(newSettings: Record<string, any>) {
 }
 
 export async function loginAdmin(email: string, password: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createServerClient();
   return await supabase.auth.signInWithPassword({ email, password });
 }
@@ -382,7 +422,7 @@ const POSTS_PER_PAGE = LIMITS.DEFAULT_PAGE_SIZE
 
 const getPublicClient = cache(() => {
   return createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL || 'https://127.0.0.1',
+    (env.NEXT_PUBLIC_SUPABASE_URL && !env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project-ref') && env.NEXT_PUBLIC_SUPABASE_URL !== 'YOUR_SUPABASE_URL') ? env.NEXT_PUBLIC_SUPABASE_URL : 'https://127.0.0.1',
     env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder',
     {
       global: {
@@ -396,10 +436,6 @@ const getPublicClient = cache(() => {
     }
   );
 });
-
-const isConfigured = !!env.NEXT_PUBLIC_SUPABASE_URL && 
-  env.NEXT_PUBLIC_SUPABASE_URL !== 'YOUR_SUPABASE_URL' && 
-  !env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project-ref');
 
 export async function getPosts(page = 1, filters?: { status?: string, categoryId?: string, search?: string, authorName?: string }) {
   if (!isConfigured) return { data: [], count: 0 }
@@ -437,7 +473,7 @@ export async function getPosts(page = 1, filters?: { status?: string, categoryId
     const { data, count, error } = await query.range(from, to)
 
     if (error || !data) {
-      if (error && error.code !== '42P01') console.error('Error fetching posts:', error)
+      if (error && error.code !== '42P01' && error.message !== 'fetch failed') console.error('Error fetching posts:', error)
       return { data: [], count: 0 }
     }
 
@@ -468,7 +504,7 @@ export async function getPosts(page = 1, filters?: { status?: string, categoryId
 
     return { data: enhancedData, count: count || 0 }
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getPosts:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getPosts:', err)
     return { data: [], count: 0 }
   }
 }
@@ -509,7 +545,7 @@ export async function getPostsByTag(tagSlug: string, page = 1) {
 
     return { data: enhancedData, count: count || 0 }
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getPostsByTag:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getPostsByTag:', err)
     return { data: [], count: 0 }
   }
 }
@@ -544,7 +580,7 @@ export async function getPostBySlug(slug: string) {
       tags
     } as PostWithCategoryAndTags as any
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getPostBySlug:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getPostBySlug:', err)
     return null
   }
 }
@@ -557,7 +593,7 @@ export async function getCategories(): Promise<CategoryRow[]> {
     const { data } = await supabase.from('categories').select('*').order('name') as { data: CategoryRow[] | null }
     return data || []
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getCategories:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getCategories:', err)
     return []
   }
 }
@@ -570,7 +606,7 @@ export async function getTags(): Promise<TagRow[]> {
     const { data } = await supabase.from('tags').select('*').order('name') as { data: TagRow[] | null }
     return data || []
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getTags:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getTags:', err)
     return []
   }
 }
@@ -583,7 +619,7 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryRow | nul
     const { data } = await supabase.from('categories').select('*').eq('slug', slug).single() as { data: CategoryRow | null }
     return data
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getCategoryBySlug:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getCategoryBySlug:', err)
     return null
   }
 }
@@ -596,7 +632,7 @@ export async function getTagBySlug(slug: string): Promise<TagRow | null> {
     const { data } = await supabase.from('tags').select('*').eq('slug', slug).single() as { data: TagRow | null }
     return data
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getTagBySlug:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getTagBySlug:', err)
     return null
   }
 }
@@ -614,7 +650,7 @@ export async function getSettings(): Promise<Record<string, any>> {
       return acc
     }, {} as Record<string, any>)
   } catch (err: any) {
-    if (err?.code !== '42P01') console.error('Error in getSettings:', err)
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getSettings:', err)
     return {}
   }
 }
@@ -625,6 +661,7 @@ export async function getSettings(): Promise<Record<string, any>> {
 
 
 export async function createPost(formData: FormData) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   try {
     const supabase = await createServerClient();
     
@@ -705,6 +742,7 @@ export async function createPost(formData: FormData) {
 }
 
 export async function updatePost(id: string, formData: FormData) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   let slugToRevalidate;
   try {
     const supabase = await createServerClient();
@@ -791,6 +829,7 @@ export async function updatePost(id: string, formData: FormData) {
 }
 
 export async function deletePost(id: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   try {
     const supabase = await createServerClient();
     
@@ -837,6 +876,7 @@ async function handleTags(supabase: any, postId: string, tagsStr: string) {
 
 
 export async function subscribeToNewsletter(formData: FormData) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   try {
 
@@ -932,6 +972,7 @@ export async function subscribeToNewsletter(formData: FormData) {
 
 
 export async function downloadLeadMagnet(formData: FormData) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   try {
 
@@ -1017,10 +1058,12 @@ export async function downloadLeadMagnet(formData: FormData) {
 
 
 export async function createLeadMagnetAdmin(payload: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('lead_magnets').insert(payload);
 }
 export async function uploadLeadMagnetFile(fileName: string, fileData: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   await supabase.storage.createBucket(BUCKETS.LEAD_MAGNETS, { public: true });
   
@@ -1041,11 +1084,13 @@ export async function uploadLeadMagnetFile(fileName: string, fileData: any) {
 }
 
 export async function updateLeadMagnetAdmin(id: string, payload: any) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('lead_magnets').update(payload).eq('id', id);
 }
 
 export async function deleteLeadMagnetAdmin(id: string) {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   return await supabase.from('lead_magnets').delete().eq('id', id);
 }
@@ -1111,6 +1156,7 @@ export async function processLeadMagnetDownload(email: string, first_name: strin
 }
 
 export async function publishScheduledPostsAdmin() {
+  if (!isConfigured) return [];
   const supabase = createAdminClient();
   const now = new Date().toISOString();
   const { data: scheduledPosts, error: fetchError } = await supabase
@@ -1133,6 +1179,7 @@ export async function publishScheduledPostsAdmin() {
 }
 
 export async function exportSubscribersCsvAdmin() {
+  if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('subscribers')

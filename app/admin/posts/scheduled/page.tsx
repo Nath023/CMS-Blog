@@ -10,7 +10,7 @@ export default async function AdminScheduledPostsPage() {
     const data = await getScheduledPosts();
     posts = data || [];
   } catch (e: any) {
-    if (e?.code !== '42P01') console.error('Error fetching scheduled posts:', e);
+    if (e?.code !== '42P01') if (e?.message !== 'fetch failed' && !e?.message?.includes('ECONNREFUSED')) console.error('Error fetching scheduled posts:', e);
   }
 
   return (

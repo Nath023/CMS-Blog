@@ -36,7 +36,7 @@ export function SubscribersTable({ initialSubscribers }: { initialSubscribers: a
   const handleExport = async () => {
     setExporting(true);
     const result = await exportSubscribersCsv();
-    if (result.csv) {
+    if (result.csv && typeof result.csv === 'string') {
       const blob = new Blob([result.csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

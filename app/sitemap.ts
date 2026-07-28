@@ -46,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     routes.push(...categoryRoutes);
     
   } catch (error) {
-    console.error('Error generating sitemap:', error);
+    if (error?.message !== 'fetch failed' && !error?.message?.includes('ECONNREFUSED')) console.error('Error generating sitemap:', error);
   }
 
   return routes;

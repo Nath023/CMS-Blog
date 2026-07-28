@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { AdminNav } from '@/components/admin/AdminNav';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { getSettings } from '@/lib/fetch';
 import { siteConfig } from '@/config/site';
 import { featuresConfig } from '@/config/features';
@@ -9,6 +10,7 @@ import { featuresConfig } from '@/config/features';
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
   const siteLogoUrl = settings?.site_logo_url || '/logo.svg';
+
   return (
     <div className="bg-[#FAFAFA] dark:bg-[#050505] text-slate-900 dark:text-slate-50 min-h-screen flex flex-col md:flex-row font-sans transition-colors duration-300">
       <aside className="w-full md:w-64 shrink-0 bg-white dark:bg-[#0a0a0a] border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800 p-4 md:p-6 md:min-h-screen flex flex-col z-50 sticky top-0 md:static">
@@ -44,6 +46,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       <main className="flex-1 p-4 md:p-8 w-full max-w-6xl mx-auto md:overflow-y-auto min-h-[calc(100vh-140px)] md:min-h-screen">
+        <AdminHeader />
         {children}
       </main>
     </div>

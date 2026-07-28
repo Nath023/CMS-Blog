@@ -14,7 +14,7 @@ export default async function AdminPostsPage(props: { searchParams: { status?: s
     const data = await getAdminPosts(status);
     posts = data || [];
   } catch (e: any) {
-    if (e?.code !== '42P01') console.error('Error fetching admin posts:', e);
+    if (e?.code !== '42P01') if (e?.message !== 'fetch failed' && !e?.message?.includes('ECONNREFUSED')) console.error('Error fetching admin posts:', e);
   }
 
   return (

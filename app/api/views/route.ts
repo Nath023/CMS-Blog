@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('View tracking error:', error);
+    if (error?.message !== 'fetch failed' && !error?.message?.includes('ECONNREFUSED')) console.error('View tracking error:', error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
