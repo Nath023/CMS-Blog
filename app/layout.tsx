@@ -2,7 +2,7 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import { defaultMetadata } from '@/config/seo';
+import { baseMetadata } from '@/app/metadata';
 import { Analytics } from '@/components/Analytics';
 
 const inter = Inter({ 
@@ -17,7 +17,7 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
-export const metadata: Metadata = defaultMetadata;
+export const metadata: Metadata = baseMetadata;
 
 export default function RootLayout({
   children,
