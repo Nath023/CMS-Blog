@@ -2,15 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, ChevronDown, Search, Moon, Sun } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, Moon, Sun, Check, Palette } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { featuresConfig } from '@/config/features';
 import { motion, AnimatePresence } from 'motion/react';
+import { useColorTheme, ColorTheme } from '@/components/theme-provider';
+
+const COLOR_PRESETS: { name: string; value: ColorTheme; hex: string }[] = [
+  { name: "Coral", value: "default", hex: "#FF6B6B" },
+  { name: "Rose", value: "rose", hex: "#e11d48" },
+  { name: "Blue", value: "blue", hex: "#3b82f6" },
+  { name: "Green", value: "green", hex: "#10b981" },
+  { name: "Violet", value: "violet", hex: "#8b5cf6" },
+  { name: "Orange", value: "orange", hex: "#f97316" },
+];
 
 export function MobileMenu({ navItems }: { navItems: any[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
+  const { colorTheme, setColorTheme } = useColorTheme();
 
   const toggleSection = (name: string) => {
     setOpenSection(openSection === name ? null : name);
@@ -157,23 +168,48 @@ export function MobileMenu({ navItems }: { navItems: any[] }) {
                 className="mt-auto pt-8 pb-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-4 px-2"
               >
                 {featuresConfig.enableDarkMode && (
-                  <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl mb-2">
-                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">Theme</span>
-                    <div className="flex bg-slate-200 dark:bg-slate-800 rounded-lg p-1">
-                      <button 
-                        onClick={() => setTheme('light')}
-                        className={`p-1.5 rounded-md transition-colors ${theme === 'light' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
-                        aria-label="Light Mode"
-                      >
-                        <Sun className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setTheme('dark')}
-                        className={`p-1.5 rounded-md transition-colors ${theme === 'dark' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500'}`}
-                        aria-label="Dark Mode"
-                      >
-                        <Moon className="w-4 h-4" />
-                      </button>
+                  <div className="flex flex-col gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl mb-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-900 dark:text-slate-100">Mode</span>
+                      <div className="flex bg-slate-200 dark:bg-slate-800 rounded-lg p-1">
+                        <button 
+                          onClick={() => setTheme('light')}
+                          className={`p-1.5 rounded-md transition-colors ${theme === 'light' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                          aria-label="Light Mode"
+                        >
+                          <Sun className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => setTheme('dark')}
+                          className={`p-1.5 rounded-md transition-colors ${theme === 'dark' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500'}`}
+                          aria-label="Dark Mode"
+                        >
+                          <Moon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-slate-200 dark:border-slate-800 pt-3">
+                      <span className="text-sm font-medium text-slate-900 dark:text-slate-100 block mb-2">Color Theme</span>
+                      <div className="grid grid-cols-6 gap-2">
+                        {COLOR_PRESETS.map((preset) => (
+                          <button
+                            key={preset.value}
+                            onClick={() => setColorTheme(preset.value)}
+                            className="group relative flex items-center justify-center rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary"
+                            aria-label={`Select ${preset.name} theme`}
+                          >
+                            <div 
+                              className="w-8 h-8 rounded-full shadow-inner flex items-center justify-center border border-black/10 dark:border-white/10" 
+                              style={{ backgroundColor: preset.hex }}
+                            >
+                              {colorTheme === preset.value && (
+                                <Check className="w-4 h-4 text-white drop-shadow-md" />
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

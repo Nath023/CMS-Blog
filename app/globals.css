@@ -5,11 +5,42 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
-  --color-primary: #FF6B6B;
-  --color-secondary: #1A535C;
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
 }
 
 @layer base {
+  :root {
+    /* Default (Coral/Red) */
+    --primary: #FF6B6B;
+    --secondary: #1A535C;
+  }
+  
+  :root.theme-rose {
+    --primary: #e11d48;
+    --secondary: #be123c;
+  }
+  
+  :root.theme-blue {
+    --primary: #3b82f6;
+    --secondary: #1d4ed8;
+  }
+  
+  :root.theme-green {
+    --primary: #10b981;
+    --secondary: #047857;
+  }
+  
+  :root.theme-violet {
+    --primary: #8b5cf6;
+    --secondary: #6d28d9;
+  }
+  
+  :root.theme-orange {
+    --primary: #f97316;
+    --secondary: #c2410c;
+  }
+
   html, body {
     @apply antialiased bg-[#FAFAFA] text-gray-600 dark:bg-[#050505] dark:text-gray-400 transition-colors duration-300;
   }
