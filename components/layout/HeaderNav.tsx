@@ -60,7 +60,7 @@ export function HeaderNav({ settings }: { settings?: any }) {
                 
                 if (item.megaMenu) {
                   return (
-                    <div key={item.name} className="group h-full flex items-center">
+                    <div key={item.name} className="group h-full flex items-center relative">
                       <Link 
                         href={item.path}
                         className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'text-primary bg-primary/10' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'}`}
