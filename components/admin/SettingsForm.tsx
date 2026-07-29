@@ -4,11 +4,21 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import { siteConfig } from '@/config/site';
+import { Check } from 'lucide-react';
 
 interface SettingsFormProps {
   initialSettings: Record<string, any>;
   onSave: (settings: Record<string, any>) => Promise<{ success: boolean; error?: string }>;
 }
+
+const COLOR_PRESETS = [
+  { name: "Coral (Default)", value: "default", hex: "#FF6B6B" },
+  { name: "Rose", value: "rose", hex: "#e11d48" },
+  { name: "Blue", value: "blue", hex: "#3b82f6" },
+  { name: "Green", value: "green", hex: "#10b981" },
+  { name: "Violet", value: "violet", hex: "#8b5cf6" },
+  { name: "Orange", value: "orange", hex: "#f97316" },
+];
 
 export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
   const router = useRouter();
@@ -20,6 +30,7 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
   const [siteLogoUrl, setSiteLogoUrl] = useState(initialSettings.site_logo_url || '');
   const [defaultAuthor, setDefaultAuthor] = useState(initialSettings.default_author || siteConfig.authorBio.name);
   const [defaultMetaImage, setDefaultMetaImage] = useState(initialSettings.default_meta_image || siteConfig.authorBio.imageUrl);
+  const [colorTheme, setColorTheme] = useState(initialSettings.color_theme || 'default');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +43,7 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
         site_logo_url: siteLogoUrl,
         default_author: defaultAuthor,
         default_meta_image: defaultMetaImage,
+        color_theme: colorTheme,
       }).then(result => {
         if (!result.success) {
           setError(result.error || 'Failed to save settings');
@@ -111,6 +123,41 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
             className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             placeholder="https://example.com/image.jpg"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-3">
+            Site Color Theme
+          </label>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {COLOR_PRESETS.map((preset) => (
+              <button
+                key={preset.value}
+                type="button"
+                onClick={() => setColorTheme(preset.value)}
+                className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                  colorTheme === preset.value 
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500/20' 
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-950'
+                }`}
+              >
+                <div 
+                  className="w-10 h-10 rounded-full shadow-inner flex items-center justify-center border border-black/10 dark:border-white/10"
+                  style={{ backgroundColor: preset.hex }}
+                >
+                  {colorTheme === preset.value && (
+                    <Check className="w-5 h-5 text-white drop-shadow-md" />
+                  )}
+                </div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {preset.name.split(' ')[0]}
+                </span>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            This will change the primary brand color across the entire site.
+          </p>
         </div>
       </div>
 
