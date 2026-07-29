@@ -98,8 +98,11 @@ export function MobileMenu({ navItems }: { navItems: any[] }) {
                   {item.megaMenu ? (
                     <>
                       <button 
+                        type="button"
                         onClick={() => toggleSection(item.name)}
-                        className="flex items-center justify-between px-6 py-3 text-base font-semibold text-slate-900 dark:text-slate-100 focus:outline-none rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                        aria-expanded={openSection === item.name}
+                        aria-controls={`mobile-menu-${item.name.toLowerCase().replace(/\\s+/g, '-')}`}
+                        className="flex w-full items-center justify-between px-6 py-3 text-base font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                       >
                         {item.name}
                         <motion.div
@@ -112,6 +115,7 @@ export function MobileMenu({ navItems }: { navItems: any[] }) {
                       <AnimatePresence>
                         {openSection === item.name && (
                           <motion.div 
+                            id={`mobile-menu-${item.name.toLowerCase().replace(/\\s+/g, '-')}`}
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
@@ -123,7 +127,7 @@ export function MobileMenu({ navItems }: { navItems: any[] }) {
                                 <Link 
                                   key={subItem.name} 
                                   href={subItem.path} 
-                                  className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none"
+                                  className="flex w-full px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                   onClick={() => setIsOpen(false)}
                                 >
                                   {subItem.name}
@@ -137,7 +141,7 @@ export function MobileMenu({ navItems }: { navItems: any[] }) {
                   ) : (
                     <Link 
                       href={item.path} 
-                      className="flex items-center px-6 py-3 text-base font-semibold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-colors focus:outline-none"
+                      className="flex items-center w-full px-6 py-3 text-base font-semibold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
