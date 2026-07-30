@@ -46,9 +46,6 @@ export const navigationConfig = {
         { name: 'Checklists', path: '/resources/checklists' },
       ]
     },
-    { name: 'Authors', path: '/authors' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
   ],
   footer: {
     explore: [
