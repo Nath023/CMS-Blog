@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { deleteMedia, updateMediaMetadata } from './actions';
 import { useRouter } from 'next/navigation';
+import { File as FileIcon } from 'lucide-react';
 
 export default function MediaGrid({ initialMedia }: { initialMedia: any[] }) {
   const [media, setMedia] = useState(initialMedia);
@@ -57,7 +58,6 @@ export default function MediaGrid({ initialMedia }: { initialMedia: any[] }) {
             type="file" 
             id="media-upload-grid" 
             className="hidden" 
-            accept="image/*" 
             multiple
             onChange={handleUpload}
             disabled={uploading}
@@ -84,14 +84,20 @@ export default function MediaGrid({ initialMedia }: { initialMedia: any[] }) {
               onClick={() => setEditingItem(item)}
             >
               <div className="relative aspect-square w-full bg-slate-100 dark:bg-slate-950">
-                <Image 
-                  src={item.file_url} 
-                  alt={item.alt_text || item.file_name} 
-                  fill 
-                  className="object-cover" 
-                />
+                {item.file_name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
+                  <Image 
+                    src={item.file_url} 
+                    alt={item.alt_text || item.file_name} 
+                    fill 
+                    className="object-cover" 
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-100 dark:bg-slate-950 group-hover:text-primary transition-colors">
+                    <FileIcon className="w-12 h-12" />
+                  </div>
+                )}
               </div>
-              <div className="p-3">
+              <div className="p-3 border-t border-slate-100 dark:border-slate-800">
                 <p className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate" title={item.file_name}>
                   {item.file_name}
                 </p>
@@ -110,7 +116,14 @@ export default function MediaGrid({ initialMedia }: { initialMedia: any[] }) {
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row gap-6 shadow-2xl">
             <div className="w-full md:w-1/2 flex flex-col gap-4">
               <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950">
-                <Image src={editingItem.file_url} alt={editingItem.alt_text || 'Preview'} fill className="object-contain" />
+                {editingItem.file_name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
+                  <Image src={editingItem.file_url} alt={editingItem.alt_text || 'Preview'} fill className="object-contain" />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-950 text-slate-400 gap-3">
+                    <FileIcon className="w-16 h-16" />
+                    <span className="text-sm font-medium">{editingItem.file_name.split('.').pop()?.toUpperCase()} File</span>
+                  </div>
+                )}
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400 break-all bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
                 <p className="font-semibold mb-1 text-slate-900 dark:text-slate-100">File URL:</p>

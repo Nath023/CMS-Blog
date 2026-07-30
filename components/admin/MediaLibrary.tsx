@@ -5,14 +5,15 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { getMediaFilesClient } from '@/lib/database';
+import { FileIcon, Link as LinkIcon } from 'lucide-react';
+
 export function MediaLibrary({ onSelect, onCancel }: { onSelect: (url: string) => void, onCancel: () => void }) {
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [uploading, setUploading] = useState(false);
-
+  const [externalUrl, setExternalUrl] = useState('');
   
-
   const fetchMedia = async () => {
     setLoading(true);
     try {
@@ -49,6 +50,7 @@ export function MediaLibrary({ onSelect, onCancel }: { onSelect: (url: string) =
         method: 'POST',
         body: formData,
       });
+
       if (res.ok) {
         fetchMedia();
       } else {
@@ -63,25 +65,44 @@ export function MediaLibrary({ onSelect, onCancel }: { onSelect: (url: string) =
     }
   };
 
+  const handleExternalInsert = () => {
+    if (externalUrl.trim()) {
+      onSelect(externalUrl.trim());
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-lg max-h-[80vh]">
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center gap-4">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Media Library</h2>
-        <Button variant="outline" size="sm" onClick={onCancel}>Close</Button>
+      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 shrink-0">Media & Files</h2>
+        
+        <div className="flex w-full sm:w-auto items-center gap-2">
+          <Input 
+            placeholder="Paste external link (e.g. Google Drive)..." 
+            value={externalUrl}
+            onChange={(e) => setExternalUrl(e.target.value)}
+            className="flex-1 sm:w-[250px]"
+          />
+          <Button variant="default" size="sm" onClick={handleExternalInsert} disabled={!externalUrl.trim()}>
+            <LinkIcon className="w-4 h-4 mr-2" />
+            Insert
+          </Button>
+          <Button variant="outline" size="sm" onClick={onCancel} className="ml-2">Close</Button>
+        </div>
       </div>
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center gap-4">
+
+      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center gap-4 bg-slate-50 dark:bg-slate-950/50">
         <Input 
-          placeholder="Search media..." 
+          placeholder="Search files..." 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
+          className="max-w-xs bg-white dark:bg-slate-900"
         />
         <div className="flex items-center gap-2">
           <input 
             type="file" 
             id="media-upload" 
             className="hidden" 
-            accept="image/*" 
             onChange={handleUpload}
             disabled={uploading}
           />
@@ -104,10 +125,17 @@ export function MediaLibrary({ onSelect, onCancel }: { onSelect: (url: string) =
             {media.map((item) => (
               <div 
                 key={item.id} 
-                className="group relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-primary transition-colors"
+                className="group relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-primary transition-colors bg-slate-50 dark:bg-slate-950"
                 onClick={() => onSelect(item.file_url)}
               >
-                <Image src={item.file_url} alt={item.alt_text || item.file_name} fill className="object-cover" />
+                {item.file_name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
+                  <Image src={item.file_url} alt={item.alt_text || item.file_name} fill className="object-cover" />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
+                    <FileIcon className="w-10 h-10 mb-2" />
+                    <span className="text-xs px-2 truncate max-w-full font-medium" title={item.file_name}>{item.file_name.split('.').pop()?.toUpperCase()}</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
                   <span className="text-white text-xs truncate" title={item.file_name}>{item.file_name}</span>
                 </div>

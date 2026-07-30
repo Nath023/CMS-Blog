@@ -31,15 +31,19 @@ export function MarkdownEditor({
   const [showMedia, setShowMedia] = useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
-  const insertImage = (url: string) => {
+  const insertMedia = (url: string) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = textarea.value;
-    const imageMarkdown = `\n![Image](${url})\n`;
-    const newText = text.substring(0, start) + imageMarkdown + text.substring(end);
+    
+    const isImage = url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
+    const fileName = url.split('/').pop() || 'Download';
+    const mediaMarkdown = isImage ? `\n![Image](${url})\n` : `\n[Download ${fileName}](${url})\n`;
+    
+    const newText = text.substring(0, start) + mediaMarkdown + text.substring(end);
     
     if (controlledValue === undefined) {
       setInternalValue(newText);
@@ -51,7 +55,7 @@ export function MarkdownEditor({
     
     // Set cursor position after inserted markdown
     setTimeout(() => {
-      textarea.selectionStart = textarea.selectionEnd = start + imageMarkdown.length;
+      textarea.selectionStart = textarea.selectionEnd = start + mediaMarkdown.length;
       textarea.focus();
     }, 0);
   };
@@ -68,7 +72,7 @@ export function MarkdownEditor({
           size="sm" 
           onClick={() => setShowMedia(true)}
         >
-          Insert Image
+          Insert File or Image
         </Button>
       </div>
       <textarea 
@@ -77,13 +81,13 @@ export function MarkdownEditor({
         value={value} 
         onChange={handleChange} 
         className="flex-1 p-4 resize-none focus:outline-none font-mono text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100"
-        placeholder="Write your post content in Markdown..."
+        placeholder="Write your content in Markdown..."
       />
       {showMedia && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-4xl w-full">
             <MediaLibrary 
-              onSelect={insertImage}
+              onSelect={insertMedia}
               onCancel={() => setShowMedia(false)}
             />
           </div>

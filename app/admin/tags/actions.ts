@@ -38,3 +38,12 @@ export async function deleteTag(id: string) {
   revalidatePath('/admin/tags');
   return { success: true };
 }
+
+
+export async function bulkDeleteTags(ids: string[]) {
+  for (const id of ids) {
+    await deleteTag(id);
+  }
+  revalidatePath('/admin/tags');
+  return { success: true };
+}

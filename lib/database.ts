@@ -1,6 +1,6 @@
 "use server";
 
-import { cache } from "react";
+
 import { notFound } from "next/navigation";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
@@ -420,7 +420,7 @@ const POSTS_PER_PAGE = LIMITS.DEFAULT_PAGE_SIZE
 
 // We use the raw JS client here without SSR cookies so it works in generateStaticParams.
 
-const getPublicClient = cache(() => {
+const getPublicClient = () => {
   return createClient(
     (env.NEXT_PUBLIC_SUPABASE_URL && !env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project-ref') && env.NEXT_PUBLIC_SUPABASE_URL !== 'YOUR_SUPABASE_URL') ? env.NEXT_PUBLIC_SUPABASE_URL : 'https://127.0.0.1',
     env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder',
@@ -435,7 +435,7 @@ const getPublicClient = cache(() => {
       },
     }
   );
-});
+};
 
 export async function getPosts(page = 1, filters?: { status?: string, categoryId?: string, search?: string, authorName?: string }) {
   if (!isConfigured) return { data: [], count: 0 }

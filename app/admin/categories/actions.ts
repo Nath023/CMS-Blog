@@ -40,3 +40,12 @@ export async function deleteCategory(id: string) {
   revalidatePath('/admin/categories');
   return { success: true };
 }
+
+
+export async function bulkDeleteCategories(ids: string[]) {
+  for (const id of ids) {
+    await deleteCategory(id);
+  }
+  revalidatePath('/admin/categories');
+  return { success: true };
+}

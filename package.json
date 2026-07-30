@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' next dev -H 0.0.0.0 -p 3000",
+    "dev": "next dev",
     "build": "SKIP_ENV_VALIDATION=true NODE_ENV=production next build",
-    "start": "NODE_OPTIONS='--dns-result-order=ipv4first' NODE_ENV=production next start -H 0.0.0.0 -p 3000",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {

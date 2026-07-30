@@ -4,7 +4,6 @@ import { getSettings } from '@/lib/fetch';
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
-
   return (
     <>
       {/* @ts-expect-error Async Server Component */}
