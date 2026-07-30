@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { siteConfig } from '@/config/site';
 import { navigationConfig } from '@/config/navigation';
@@ -8,6 +8,20 @@ import { socialConfig } from '@/config/social';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <footer className="bg-white dark:bg-[#050505] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 mt-auto">
@@ -129,7 +143,8 @@ export function Footer() {
             <Link href="/changelog" className="hover:text-primary transition-colors">Changelog</Link>
             <button 
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-              className="font-semibold text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors focus:outline-none focus-visible:underline"
+              className={`font-semibold text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-all focus:outline-none focus-visible:underline ${showBackToTop ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-2 invisible'}`}
+              aria-hidden={!showBackToTop}
             >
               Back to Top &uarr;
             </button>
