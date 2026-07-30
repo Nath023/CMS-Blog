@@ -1205,3 +1205,14 @@ export async function exportSubscribersCsvAdmin() {
 
   return csvContent;
 }
+export async function getAllPublishedPostsForSitemap() {
+  if (!isConfigured) return [];
+  const supabase = getPublicClient();
+  try {
+    const { data } = await supabase.from('posts').select('slug, published_at').eq('status', 'published').order('published_at', { ascending: false });
+    return data || [];
+  } catch (err: any) {
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getAllPublishedPostsForSitemap:', err);
+    return [];
+  }
+}

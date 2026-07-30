@@ -1,55 +1,79 @@
 import { MetadataRoute } from 'next';
-import { getPosts, getCategories } from '@/lib/database';
 import { siteConfig } from '@/config/site';
+import { getCategories, getTags } from '@/lib/database';
+import { getAllPublishedPostsForSitemap } from '@/lib/database';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url;
 
-  // Base routes
-  const routes: MetadataRoute.Sitemap = [
+  // Fetch dynamic content
+  const [posts, categories, tags] = await Promise.all([
+    getAllPublishedPostsForSitemap(),
+    getCategories(),
+    getTags(),
+  ]);
+
+  // Map dynamic routes
+  const postRoutes = posts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.published_at ? new Date(post.published_at) : new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
+  const categoryRoutes = categories.map((category) => ({
+    url: `${baseUrl}/blog/category/${category.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }));
+
+  const tagRoutes = tags.map((tag) => ({
+    url: `${baseUrl}/blog/tag/${tag.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }));
+
+  // Static routes
+  const staticRoutes = [
     {
-      url: `${baseUrl}/`,
+      url: `${baseUrl}`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
+      changeFrequency: 'daily' as const,
+      priority: 1.0,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'daily' as const,
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
     },
   ];
 
-  try {
-    // Add all published posts
-    const { data: posts } = await getPosts(1, { status: 'published' }); // Assuming it returns up to 100/latest, might need pagination for huge blogs, but good for now
-    
-    const postRoutes: MetadataRoute.Sitemap = (posts as any[]).map((post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.updated_at ? new Date(post.updated_at) : new Date(post.published_at || post.created_at),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    }));
-    
-    routes.push(...postRoutes);
-
-    // Add category routes
-    const categories = await getCategories();
-    const categoryRoutes: MetadataRoute.Sitemap = categories.map((cat) => ({
-      url: `${baseUrl}/blog/category/${cat.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    }));
-
-    routes.push(...categoryRoutes);
-    
-  } catch (error) {
-    if (error?.message !== 'fetch failed' && !error?.message?.includes('ECONNREFUSED')) console.error('Error generating sitemap:', error);
-  }
-
-  return routes;
+  return [...staticRoutes, ...postRoutes, ...categoryRoutes, ...tagRoutes];
 }
-
-export const revalidate = 3600; // Cache for 1 hour
