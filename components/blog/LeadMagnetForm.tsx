@@ -51,7 +51,7 @@ export function LeadMagnetForm({ magnet, postId }: LeadMagnetFormProps) {
     <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 my-10 flex flex-col sm:flex-row gap-8 items-center max-w-4xl mx-auto shadow-sm">
       {magnet.cover_image_url && (
         <div className="w-full sm:w-1/3 aspect-[3/4] relative shrink-0 rounded-2xl overflow-hidden shadow-md">
-          <Image src={magnet.cover_image_url} alt={magnet.title} fill className="object-cover" />
+          <Image src={magnet.cover_image_url} alt={magnet.title} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
         </div>
       )}
       

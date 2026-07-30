@@ -12,7 +12,7 @@ export function ImageUpload({ value, onChange }: { value?: string, onChange: (ur
     <div className="flex flex-col gap-4">
       {value ? (
         <div className="relative w-full h-48 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
-          <Image src={value} alt="Preview" fill className="object-cover" />
+          <Image src={value} alt="Preview" fill sizes="(max-width: 768px) 100vw, 300px" className="object-cover" />
           <div className="absolute top-2 right-2 flex gap-2">
             <Button size="sm" variant="outline" type="button" onClick={() => setShowLibrary(true)}>
               Change

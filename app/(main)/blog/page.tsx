@@ -28,7 +28,7 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
 
   return (
     <main className="flex-1 w-full bg-[#FAFAFA] dark:bg-[#050505]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 lg:pt-10 lg:pb-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 lg:pt-40 lg:pb-28">
         
         {/* Hero Section */}
         <RevealWrapper className="mb-20 md:mb-28 lg:mb-32 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -134,11 +134,11 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
                             </span>
                           )}
                           {post.published_at && (
-                            <span className="text-gray-400">
+                            <span className="text-gray-400" suppressHydrationWarning>
                               {format(new Date(post.published_at), 'MMM d, yyyy')}
                             </span>
                           )}
-                          <span className="text-gray-400">·</span>
+                          <span className="text-gray-400" suppressHydrationWarning>·</span>
                           <span className="text-gray-500 font-medium">{post.author_name || defaultAuthor}</span>
                         </div>
                         <h3 className="font-serif text-slate-900 dark:text-white text-2xl leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-3">

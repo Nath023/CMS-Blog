@@ -129,7 +129,7 @@ export function MediaLibrary({ onSelect, onCancel }: { onSelect: (url: string) =
                 onClick={() => onSelect(item.file_url)}
               >
                 {item.file_name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
-                  <Image src={item.file_url} alt={item.alt_text || item.file_name} fill className="object-cover" />
+                  <Image src={item.file_url} alt={item.alt_text || item.file_name} fill sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw" className="object-cover" />
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
                     <FileIcon className="w-10 h-10 mb-2" />

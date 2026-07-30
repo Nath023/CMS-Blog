@@ -36,7 +36,7 @@ export function RelatedPosts({ posts }: { posts: any[] }) {
               <div className="flex flex-col flex-1 p-6">
                 <div className="flex items-center gap-3 mb-3 text-xs font-bold uppercase tracking-wider">
                   {post.published_at && (
-                    <span className="text-gray-400">
+                    <span className="text-gray-400" suppressHydrationWarning>
                       {format(new Date(post.published_at), 'MMM d, yyyy')}
                     </span>
                   )}

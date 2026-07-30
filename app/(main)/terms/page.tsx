@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <main className="flex-1 w-full bg-slate-50 dark:bg-[#050505] min-h-screen pt-24 pb-20">
+    <main className="flex-1 w-full bg-slate-50 dark:bg-[#050505] min-h-screen pt-24 lg:pt-32 pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-12 lg:p-16 shadow-sm">
           <header className="mb-12 border-b border-slate-100 dark:border-slate-800 pb-8">

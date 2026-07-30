@@ -89,6 +89,7 @@ export default function MediaGrid({ initialMedia }: { initialMedia: any[] }) {
                     src={item.file_url} 
                     alt={item.alt_text || item.file_name} 
                     fill 
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                     className="object-cover" 
                   />
                 ) : (
@@ -117,7 +118,7 @@ export default function MediaGrid({ initialMedia }: { initialMedia: any[] }) {
             <div className="w-full md:w-1/2 flex flex-col gap-4">
               <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950">
                 {editingItem.file_name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
-                  <Image src={editingItem.file_url} alt={editingItem.alt_text || 'Preview'} fill className="object-contain" />
+                  <Image src={editingItem.file_url} alt={editingItem.alt_text || 'Preview'} fill sizes="(max-width: 768px) 100vw, 500px" className="object-contain" />
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-950 text-slate-400 gap-3">
                     <FileIcon className="w-16 h-16" />

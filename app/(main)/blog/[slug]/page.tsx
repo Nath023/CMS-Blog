@@ -68,7 +68,7 @@ export default async function BlogPostPage(props: { params: { slug: string } }) 
       {featuresConfig.enableReadingTime && <ReadingProgressBar />}
       <CloseButton />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:pt-32 lg:pb-20">
         <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 lg:p-16 shadow-sm overflow-hidden mb-16">
           <header className="mb-12 text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-[1.1] mb-8">{post.title}</h1>
@@ -100,7 +100,7 @@ export default async function BlogPostPage(props: { params: { slug: string } }) 
                           alt={props.alt || ''}
                           fill
                           className="object-cover"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          sizes="(max-width: 768px) 100vw, 768px"
                         />
                       </span>
                     ),

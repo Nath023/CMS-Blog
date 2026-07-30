@@ -31,11 +31,11 @@ export function FeaturedPost({ post, defaultAuthor }: { post: PostWithCategoryAn
             </span>
           )}
           {post.published_at && (
-            <span className="text-gray-400">
+            <span className="text-gray-400" suppressHydrationWarning>
               {format(new Date(post.published_at), 'MMM d, yyyy')}
             </span>
           )}
-          <span className="text-gray-400">·</span>
+          <span className="text-gray-400" suppressHydrationWarning>·</span>
           <span className="text-gray-500 font-medium">{post.author_name || defaultAuthor || siteConfig.authorBio.name}</span>
         </div>
         

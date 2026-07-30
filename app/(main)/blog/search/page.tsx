@@ -25,7 +25,7 @@ export default async function SearchPage(props: { searchParams: { q?: string, pa
 
   return (
     <main className="flex-1 w-full bg-slate-50 dark:bg-slate-950/50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:pt-32 lg:pb-20">
         <header className="mb-16 md:mb-24 max-w-3xl text-center mx-auto">
           <span className="text-blue-600 font-bold uppercase tracking-wider text-sm mb-4 block">Search</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mb-8 leading-[1.1]">
