@@ -7,11 +7,27 @@ import { MediaLibrary } from './MediaLibrary';
 export function MarkdownEditor({
   name,
   defaultValue,
+  value: controlledValue,
+  onChange,
 }: {
-  name: string;
+  name?: string;
   defaultValue?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }) {
-  const [value, setValue] = useState(defaultValue || '');
+  const [internalValue, setInternalValue] = useState(defaultValue || '');
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (controlledValue === undefined) {
+      setInternalValue(newValue);
+    }
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
+
   const [showMedia, setShowMedia] = useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -23,9 +39,14 @@ export function MarkdownEditor({
     const end = textarea.selectionEnd;
     const text = textarea.value;
     const imageMarkdown = `\n![Image](${url})\n`;
-
     const newText = text.substring(0, start) + imageMarkdown + text.substring(end);
-    setValue(newText);
+    
+    if (controlledValue === undefined) {
+      setInternalValue(newText);
+    }
+    if (onChange) {
+      onChange(newText);
+    }
     setShowMedia(false);
     
     // Set cursor position after inserted markdown
@@ -54,11 +75,10 @@ export function MarkdownEditor({
         ref={textareaRef}
         name={name} 
         value={value} 
-        onChange={e => setValue(e.target.value)} 
+        onChange={handleChange} 
         className="flex-1 p-4 resize-none focus:outline-none font-mono text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100"
         placeholder="Write your post content in Markdown..."
       />
-
       {showMedia && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-4xl w-full">

@@ -27,6 +27,7 @@ export function AdminNav() {
     { name: 'Media', href: ROUTES.ADMIN.MEDIA, icon: ImageIcon },
     { name: 'Subscribers', href: ROUTES.ADMIN.SUBSCRIBERS, icon: Users },
     { name: 'Lead Magnets', href: ROUTES.ADMIN.LEAD_MAGNETS, icon: BookOpen },
+    { name: 'Pages', href: ROUTES.ADMIN.PAGES, icon: FileText },
     { name: 'Settings', href: ROUTES.ADMIN.SETTINGS, icon: Settings },
   ];
 

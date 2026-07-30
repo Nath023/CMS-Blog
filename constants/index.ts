@@ -27,7 +27,7 @@ export const ROUTES = {
     SUBSCRIBERS: '/admin/subscribers',
     LEAD_MAGNETS: '/admin/lead-magnets',
     MEDIA: '/admin/media',
-    SETTINGS: '/admin/settings',
+    SETTINGS: '/admin/settings', PAGES: '/admin/pages',
     LOGIN: '/admin/login',
   },
 } as const;
