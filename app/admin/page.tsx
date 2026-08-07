@@ -13,11 +13,11 @@ const DashboardCharts = dynamic(
 export default async function AdminDashboard() {
   const { 
     totalPosts, publishedPosts, draftPosts, archivedPosts, totalViews,
-    statusData, monthlyData, recentPosts, popularPosts 
+    totalSubscribers, activeSubscribers, subscriberData,
+    statusData, monthlyData, recentPosts, popularPosts,
+    demographics, topSearches
   } = await getAdminDashboardStats();
-
- 
- 
+  
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -30,7 +30,7 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm">
           <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Posts</div>
           <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{totalPosts || 0}</div>
@@ -43,19 +43,96 @@ export default async function AdminDashboard() {
           <div className="text-sm font-medium text-amber-600 mb-1">Drafts</div>
           <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{draftPosts || 0}</div>
         </div>
-        <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm">
-          <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Archived</div>
-          <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{archivedPosts || 0}</div>
-        </div>
         <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/20 dark:to-slate-900">
           <div className="text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-1">Total Views</div>
           <div className="text-3xl font-bold text-indigo-900 dark:text-indigo-100">{totalViews || 0}</div>
         </div>
+        <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm">
+          <div className="text-sm font-medium text-blue-600 mb-1">Subscribers</div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{totalSubscribers || 0}</div>
+        </div>
+        <div className="bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm">
+          <div className="text-sm font-medium text-emerald-600 mb-1">Active Subs</div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{activeSubscribers || 0}</div>
+        </div>
       </div>
 
-      <DashboardCharts statusData={statusData} monthlyData={monthlyData} />
+      <DashboardCharts statusData={statusData} monthlyData={monthlyData} subscriberData={subscriberData || []} />
 
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="font-bold text-slate-800 dark:text-slate-200">Reader Demographics</h3>
+          </div>
+          <div className="p-6 grid grid-cols-2 gap-6 flex-1">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wider">Top Countries</h4>
+              <div className="space-y-3">
+                {demographics && Object.entries(demographics.countries).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 5).map(([country, count]) => (
+                  <div key={country} className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{country}</span>
+                    <span className="text-sm text-slate-500">{count as number}</span>
+                  </div>
+                ))}
+                {(!demographics || Object.keys(demographics.countries).length === 0) && (
+                  <div className="text-sm text-slate-500">No country data yet</div>
+                )}
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wider">Devices & Referrers</h4>
+              <div className="space-y-3">
+                {demographics && Object.entries(demographics.devices).map(([device, count]) => (
+                  <div key={device} className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{device}</span>
+                    <span className="text-sm text-slate-500">{count as number}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 space-y-3">
+                {demographics && Object.entries(demographics.referrers).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 3).map(([ref, count]) => (
+                  <div key={ref} className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate max-w-[100px]">{ref}</span>
+                    <span className="text-sm text-slate-500">{count as number}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="font-bold text-slate-800 dark:text-slate-200">Search Analytics</h3>
+          </div>
+          <div className="divide-y divide-slate-100 dark:divide-slate-800 flex-1">
+            <div className="p-4 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Search Term</span>
+              <div className="flex gap-4">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-right">Searches</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-right">Results</span>
+              </div>
+            </div>
+            {topSearches?.map((s: any, i: number) => (
+              <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-50 dark:bg-slate-950 transition-colors">
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate pr-4">{s.term}</span>
+                <div className="flex gap-4 shrink-0">
+                  <span className="text-sm text-slate-600 dark:text-slate-400 w-16 text-right font-medium">{s.count}</span>
+                  <span className={`text-sm w-16 text-right font-medium ${s.results === 0 ? 'text-red-500' : 'text-slate-600 dark:text-slate-400'}`}>{s.results}</span>
+                </div>
+              </div>
+            ))}
+            {(!topSearches || topSearches.length === 0) && (
+              <div className="p-8 text-center text-slate-500 dark:text-slate-400">
+                No search data yet.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
           <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="font-bold text-slate-800 dark:text-slate-200">Recent Activity</h3>

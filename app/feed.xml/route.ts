@@ -1,8 +1,8 @@
-import { getPosts } from '@/lib/database';
+import { getAllPublishedPostsForFeed } from '@/lib/database';
 import { siteConfig } from '@/config/site';
 
 export async function GET() {
-  const { data: posts } = await getPosts(1, { status: 'published' });
+  const posts = await getAllPublishedPostsForFeed();
   const siteUrl = siteConfig.url;
 
   const feed = `<?xml version="1.0" encoding="UTF-8" ?>

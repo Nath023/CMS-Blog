@@ -9,6 +9,8 @@ import { ImageUpload } from '@/components/admin/ImageUpload';
 import { SEOAssistant } from '@/components/admin/SEOAssistant';
 import { useRouter } from 'next/navigation';
 import { Save } from 'lucide-react';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import dynamic from 'next/dynamic';
 
 const MarkdownEditor = dynamic(
@@ -23,6 +25,7 @@ export function PostForm({ post, categories, initialTags = '' }: { post?: Post, 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(post?.featured_image_url || '');
+  const [scheduledAt, setScheduledAt] = useState<Date | null>(post?.published_at ? new Date(post.published_at) : null);
   const [showDelete, setShowDelete] = useState(false);
   
   const formRef = useRef<HTMLFormElement>(null);
@@ -240,6 +243,28 @@ export function PostForm({ post, categories, initialTags = '' }: { post?: Post, 
             </div>
             
             <div className="flex flex-col gap-6">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Premium Content</label>
+                <div className="relative flex items-center">
+                  <input type="checkbox" name="is_premium" value="true" defaultChecked={post?.is_premium} className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-600" />
+                  <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">Requires subscription</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Language</label>
+                <Select name="language" defaultValue={post?.language || 'en'}>
+                  <option value="en">English (en)</option>
+                  <option value="es">Spanish (es)</option>
+                  <option value="fr">French (fr)</option>
+                  <option value="de">German (de)</option>
+                  <option value="it">Italian (it)</option>
+                  <option value="pt">Portuguese (pt)</option>
+                  <option value="zh">Chinese (zh)</option>
+                  <option value="ja">Japanese (ja)</option>
+                  <option value="ar">Arabic (ar)</option>
+                </Select>
+              </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Status</label>
                 <Select name="status" defaultValue={post?.status || 'draft'} onChange={(e) => {
@@ -270,7 +295,22 @@ export function PostForm({ post, categories, initialTags = '' }: { post?: Post, 
               
               <div className={`scheduled-container ${(!post || post.status === 'draft') ? '' : 'hidden'}`}>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Scheduled At (Optional)</label>
-                <Input type="datetime-local" name="scheduled_at" defaultValue={post?.published_at ? new Date(post.published_at).toISOString().slice(0, 16) : ''} />
+                <div className="relative">
+                  <DatePicker 
+                    selected={scheduledAt} 
+                    onChange={(date: Date | null) => setScheduledAt(date)} 
+                    showTimeSelect 
+                    timeFormat="HH:mm" 
+                    timeIntervals={15} 
+                    timeCaption="time" 
+                    dateFormat="MMMM d, yyyy h:mm aa" 
+                    customInput={<Input />} 
+                    placeholderText="Select date and time"
+                    isClearable
+                    className="w-full"
+                  />
+                  <input type="hidden" name="scheduled_at" value={scheduledAt ? scheduledAt.toISOString() : ''} />
+                </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">If set, the post will be published automatically via Cron.</p>
               </div>
               
@@ -305,6 +345,14 @@ export function PostForm({ post, categories, initialTags = '' }: { post?: Post, 
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Meta Description</label>
                     <Textarea name="meta_description" defaultValue={post?.meta_description} className="h-20" placeholder="Overrides excerpt" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Canonical URL</label>
+                    <Input name="canonical_url" defaultValue={post?.canonical_url} placeholder="https://example.com/original-article" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Schema Markup (JSON)</label>
+                    <Textarea name="schema_markup" defaultValue={post?.schema_markup ? JSON.stringify(post.schema_markup, null, 2) : ''} className="h-32 font-mono text-xs" placeholder={`{ "@context": "https://schema.org", ... }`} />
                   </div>
                 </div>
               </div>

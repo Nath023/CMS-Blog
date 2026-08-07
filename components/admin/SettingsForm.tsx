@@ -32,6 +32,22 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
   const [defaultMetaImage, setDefaultMetaImage] = useState(initialSettings.default_meta_image || siteConfig.authorBio.imageUrl);
   const [colorTheme, setColorTheme] = useState(initialSettings.color_theme || 'default');
 
+  const [heroBadge, setHeroBadge] = useState(initialSettings.hero_badge || 'Our Newsletter');
+  const [heroTitle, setHeroTitle] = useState(initialSettings.hero_title || 'Scale Your Brand with Digital Insights');
+  const [heroDescription, setHeroDescription] = useState(initialSettings.hero_description || 'Actionable strategies, expert tutorials, and proven frameworks on web design, SEO, and digital growth delivered straight to your inbox.');
+
+  const [heroCard1Icon, setHeroCard1Icon] = useState(initialSettings.hero_card_1_icon || 'AL');
+  const [heroCard1Title, setHeroCard1Title] = useState(initialSettings.hero_card_1_title || 'New Strategy Guide');
+  const [heroCard1Subtitle, setHeroCard1Subtitle] = useState(initialSettings.hero_card_1_subtitle || 'Just sent to your inbox');
+
+  const [heroCard2Icon, setHeroCard2Icon] = useState(initialSettings.hero_card_2_icon || 'SEO');
+  const [heroCard2Title, setHeroCard2Title] = useState(initialSettings.hero_card_2_title || 'Local SEO Checklist');
+  const [heroCard2Subtitle, setHeroCard2Subtitle] = useState(initialSettings.hero_card_2_subtitle || 'Attachment included');
+
+  const [heroCard3Icon, setHeroCard3Icon] = useState(initialSettings.hero_card_3_icon || 'CRO');
+  const [heroCard3Title, setHeroCard3Title] = useState(initialSettings.hero_card_3_title || 'Conversion Tips');
+  const [heroCard3Subtitle, setHeroCard3Subtitle] = useState(initialSettings.hero_card_3_subtitle || 'Read in 3 mins');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -44,6 +60,18 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
         default_author: defaultAuthor,
         default_meta_image: defaultMetaImage,
         color_theme: colorTheme,
+        hero_badge: heroBadge,
+        hero_title: heroTitle,
+        hero_description: heroDescription,
+        hero_card_1_icon: heroCard1Icon,
+        hero_card_1_title: heroCard1Title,
+        hero_card_1_subtitle: heroCard1Subtitle,
+        hero_card_2_icon: heroCard2Icon,
+        hero_card_2_title: heroCard2Title,
+        hero_card_2_subtitle: heroCard2Subtitle,
+        hero_card_3_icon: heroCard3Icon,
+        hero_card_3_title: heroCard3Title,
+        hero_card_3_subtitle: heroCard3Subtitle,
       }).then(result => {
         if (!result.success) {
           setError(result.error || 'Failed to save settings');
@@ -123,6 +151,115 @@ export function SettingsForm({ initialSettings, onSave }: SettingsFormProps) {
             className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             placeholder="https://example.com/image.jpg"
           />
+        </div>
+
+        <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">Blog Hero Section</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="heroBadge" className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Hero Badge Text
+              </label>
+              <input
+                type="text"
+                id="heroBadge"
+                value={heroBadge}
+                onChange={(e) => setHeroBadge(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                placeholder="Our Newsletter"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="heroTitle" className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Hero Title
+              </label>
+              <input
+                type="text"
+                id="heroTitle"
+                value={heroTitle}
+                onChange={(e) => setHeroTitle(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                placeholder="Scale Your Brand with Digital Insights"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="heroDescription" className="block text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
+                Hero Description
+              </label>
+              <textarea
+                id="heroDescription"
+                value={heroDescription}
+                onChange={(e) => setHeroDescription(e.target.value)}
+                rows={3}
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                placeholder="Actionable strategies, expert tutorials..."
+              />
+            </div>
+
+            <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
+              <h3 className="text-md font-bold text-slate-900 dark:text-slate-100 mb-4">Hero Cards</h3>
+              
+              {/* Card 1 */}
+              <div className="mb-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <h4 className="text-sm font-semibold mb-3">Card 1</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Icon Text</label>
+                    <input type="text" value={heroCard1Icon} onChange={e => setHeroCard1Icon(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Title</label>
+                    <input type="text" value={heroCard1Title} onChange={e => setHeroCard1Title(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Subtitle</label>
+                    <input type="text" value={heroCard1Subtitle} onChange={e => setHeroCard1Subtitle(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="mb-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <h4 className="text-sm font-semibold mb-3">Card 2</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Icon Text</label>
+                    <input type="text" value={heroCard2Icon} onChange={e => setHeroCard2Icon(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Title</label>
+                    <input type="text" value={heroCard2Title} onChange={e => setHeroCard2Title(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Subtitle</label>
+                    <input type="text" value={heroCard2Subtitle} onChange={e => setHeroCard2Subtitle(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <h4 className="text-sm font-semibold mb-3">Card 3</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Icon Text</label>
+                    <input type="text" value={heroCard3Icon} onChange={e => setHeroCard3Icon(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Title</label>
+                    <input type="text" value={heroCard3Title} onChange={e => setHeroCard3Title(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Subtitle</label>
+                    <input type="text" value={heroCard3Subtitle} onChange={e => setHeroCard3Subtitle(e.target.value)} className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div>

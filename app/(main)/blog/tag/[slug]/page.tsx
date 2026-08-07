@@ -38,7 +38,7 @@ export default async function TagPage(props: { params: { slug: string }, searchP
   const { data: posts, count } = await getPostsByTag(tag.slug, page);
 
   return (
-    <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 pt-24 pb-12 lg:pt-32 lg:pb-20">
+    <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 pt-36 pb-12 lg:pt-48 lg:pb-20">
       <header className="mb-12">
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-3">#{tag.name}</h1>
         <p className="text-slate-500 dark:text-slate-400 text-lg">Posts tagged with {tag.name}</p>
@@ -70,7 +70,7 @@ export default async function TagPage(props: { params: { slug: string }, searchP
       </div>
 
       {posts.length === 0 && (
-        <p className="text-slate-500 dark:text-slate-400 pt-24 pb-12 lg:pt-32 lg:pb-20 text-center">No posts found with this tag.</p>
+        <p className="text-slate-500 dark:text-slate-400 pt-36 pb-12 lg:pt-48 lg:pb-20 text-center">No posts found with this tag.</p>
       )}
 
       <Suspense fallback={<div className="h-10" />}><Pagination currentPage={page} totalItems={count} /></Suspense>

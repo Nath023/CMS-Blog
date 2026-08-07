@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="flex-1 w-full bg-slate-50 dark:bg-slate-950/50 min-h-screen relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:pt-32 lg:pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-12 lg:pt-48 lg:pb-20">
         
         {/* Header Section */}
         <RevealWrapper className="text-center max-w-4xl mx-auto mb-16">

@@ -14,7 +14,7 @@ export default async function GuidesPage() {
   const magnets = await getLeadMagnetsForGuides();
 
   return (
-    <div className="max-w-6xl mx-auto pt-24 pb-16 lg:pt-32 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-6xl mx-auto pt-36 pb-16 lg:pt-48 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
           Free Resources & Guides

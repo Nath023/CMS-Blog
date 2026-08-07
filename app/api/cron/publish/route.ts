@@ -1,29 +1,38 @@
 import { NextResponse } from 'next/server';
-import { publishScheduledPostsAdmin } from '@/lib/database';
+import { createClient as createServerClient } from '@/lib/supabase/server';
+import { POST_STATUS } from '@/constants';
 
-export const dynamic = 'force-dynamic';
-
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
-    const authHeader = req.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
+    const supabase = await createServerClient();
     
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Find all drafts with a published_at date in the past
+    const { data: postsToPublish } = await supabase
+      .from('posts')
+      .select('id, title, published_at')
+      .eq('status', POST_STATUS.DRAFT)
+      .not('published_at', 'is', null)
+      .lte('published_at', new Date().toISOString());
+
+    if (!postsToPublish || postsToPublish.length === 0) {
+      return NextResponse.json({ message: 'No scheduled posts to publish' });
     }
 
-    const scheduledPosts = await publishScheduledPostsAdmin();
+    const ids = postsToPublish.map(p => p.id);
 
-    if (scheduledPosts.length === 0) {
-      return NextResponse.json({ message: 'No scheduled posts to publish.' });
-    }
+    // Update their status to published
+    await supabase
+      .from('posts')
+      .update({ status: POST_STATUS.PUBLISHED })
+      .in('id', ids);
 
-    return NextResponse.json({
-      message: `Successfully published ${scheduledPosts.length} posts.`,
-      posts: scheduledPosts
+    return NextResponse.json({ 
+      success: true, 
+      message: `Published ${ids.length} scheduled posts`,
+      published_ids: ids
     });
-  } catch (error: any) {
-    console.error('Cron error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (err: any) {
+    console.error('Cron error:', err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

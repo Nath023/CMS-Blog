@@ -30,7 +30,7 @@ export async function signOut() {
 export async function getAdminDashboardStats() {
   if (!isConfigured) {
     return {
-      totalPosts: 0, publishedPosts: 0, draftPosts: 0, archivedPosts: 0, totalViews: 0,
+      demographics: { countries: {}, devices: {}, referrers: {} }, topSearches: [], totalPosts: 0, publishedPosts: 0, draftPosts: 0, archivedPosts: 0, totalViews: 0,
       recentPosts: [], popularPosts: [], statusData: [], monthlyData: []
     };
   }
@@ -45,6 +45,9 @@ export async function getAdminDashboardStats() {
     { name: 'Archived', value: 0, color: '#64748b' },
   ];
   let monthlyData: any[] = [];
+  let subscriberData: any[] = [];
+  let totalSubscribers = 0;
+  let activeSubscribers = 0;
 
   try {
     const { count: tP } = await supabase.from('posts').select('*', { count: 'exact', head: true });
@@ -58,6 +61,10 @@ export async function getAdminDashboardStats() {
 
     const { count: aP } = await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('status', POST_STATUS.ARCHIVED);
     archivedPosts = aP || 0;
+    const { count: tS } = await supabase.from("subscribers").select("*", { count: "exact", head: true });
+    totalSubscribers = tS || 0;
+    const { count: aS } = await supabase.from("subscribers").select("*", { count: "exact", head: true }).eq("status", "active");
+    activeSubscribers = aS || 0;
 
     statusData[0].value = publishedPosts;
     statusData[1].value = draftPosts;
@@ -109,6 +116,30 @@ export async function getAdminDashboardStats() {
       });
       monthlyData = months;
     }
+
+    const { data: allSubscribers } = await supabase
+      .from('subscribers')
+      .select('created_at')
+      .gte('created_at', sixMonthsAgo.toISOString());
+
+    if (allSubscribers) {
+      const months = Array.from({ length: 6 }).map((_, i) => {
+        const d = subMonths(new Date(), 5 - i);
+        return {
+          month: format(d, 'MMM yyyy'),
+          subscribers: 0
+        };
+      });
+      allSubscribers.forEach(sub => {
+        const subMonth = format(new Date(sub.created_at), 'MMM yyyy');
+        const monthIndex = months.findIndex(m => m.month === subMonth);
+        if (monthIndex !== -1) {
+          months[monthIndex].subscribers += 1;
+        }
+      });
+      subscriberData = months;
+    }
+
   } catch(e) {}
   
   return {
@@ -120,7 +151,10 @@ export async function getAdminDashboardStats() {
     archivedPosts,
     totalViews,
     recentPosts,
-    popularPosts
+    popularPosts,
+    totalSubscribers,
+    activeSubscribers,
+    subscriberData
   };
 }
 
@@ -279,7 +313,7 @@ export async function getSubscribersAdmin() {
   return data || [];
 }
 
-export async function recordPostView(postId: string, sessionId: string, userAgent: string) {
+export async function recordPostView(postId: string, sessionId: string, userAgent: string, referrer?: string, country?: string, city?: string) {
   if (!isConfigured) return;
   const supabase = createServerClient();
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -296,7 +330,10 @@ export async function recordPostView(postId: string, sessionId: string, userAgen
     await supabase.from('post_views').insert({
       post_id: postId,
       session_id: sessionId,
-      device_type: userAgent.substring(0, 255)
+      device_type: userAgent.substring(0, 255),
+      referrer: referrer?.substring(0, 255),
+      country,
+      city
     });
     
     const { data: post } = await supabase.from('posts').select('view_count').eq('id', postId).single();
@@ -452,6 +489,9 @@ export async function getPosts(page = 1, filters?: { status?: string, categoryId
   
   if (filters?.status) {
     query = query.eq('status', filters.status)
+    if (filters.status === 'published') {
+      query = query.lte('published_at', new Date().toISOString())
+    }
   }
   
   if (filters?.categoryId) {
@@ -672,9 +712,13 @@ export async function createPost(formData: FormData) {
     const author_name = formData.get('author_name') as string;
     const category_id = formData.get('category_id') as string;
     const status = formData.get('status') as string;
+    const is_premium = formData.get('is_premium') === 'true';
     const featured_image_url = formData.get('featured_image_url') as string;
     const meta_title = formData.get('meta_title') as string;
     const meta_description = formData.get('meta_description') as string;
+    const canonical_url = formData.get('canonical_url') as string;
+    const schema_markup_str = formData.get('schema_markup') as string;
+    const language = formData.get('language') as string || 'en';
     const tagsStr = formData.get('tags') as string;
 
     // Auto-generate slug if empty
@@ -709,7 +753,8 @@ export async function createPost(formData: FormData) {
       featured_image_url: featured_image_url || null,
       meta_title: meta_title || null,
       meta_description: meta_description || null,
-      published_at
+      published_at,
+      is_premium
     }).select().single();
 
     if (error) {
@@ -757,7 +802,11 @@ export async function updatePost(id: string, formData: FormData) {
     const featured_image_url = formData.get('featured_image_url') as string;
     const meta_title = formData.get('meta_title') as string;
     const meta_description = formData.get('meta_description') as string;
+    const canonical_url = formData.get('canonical_url') as string;
+    const schema_markup_str = formData.get('schema_markup') as string;
+    const language = formData.get('language') as string || 'en';
     const tagsStr = formData.get('tags') as string;
+    const is_premium = formData.get('is_premium') === 'true';
 
     if (!slug) {
       slug = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
@@ -875,6 +924,34 @@ async function handleTags(supabase: any, postId: string, tagsStr: string) {
 // --- From lib/newsletter/actions.ts ---
 
 
+
+// --- Mock Newsletter Sync ---
+// To use a real provider, you would install the relevant SDK (e.g., @sendgrid/mail, mailchimp-marketing)
+// and call it here.
+async function syncSubscriberToProvider(email: string, firstName: string | null) {
+  try {
+    const provider = process.env.NEWSLETTER_PROVIDER; // 'mailchimp', 'sendgrid', 'convertkit'
+    if (!provider) return;
+
+    if (provider === 'mailchimp') {
+      // await mailchimp.lists.addListMember(process.env.MAILCHIMP_LIST_ID, {
+      //   email_address: email,
+      //   status: 'subscribed',
+      //   merge_fields: { FNAME: firstName || '' }
+      // });
+      console.log(`[Newsletter Sync] Synced ${email} to Mailchimp`);
+    } else if (provider === 'convertkit') {
+      // await fetch(`https://api.convertkit.com/v3/forms/${process.env.CONVERTKIT_FORM_ID}/subscribe`, { ... })
+      console.log(`[Newsletter Sync] Synced ${email} to ConvertKit`);
+    } else if (provider === 'sendgrid') {
+      // await client.request({ url: '/v3/marketing/contacts', method: 'PUT', body: { contacts: [{ email, first_name: firstName }] } });
+      console.log(`[Newsletter Sync] Synced ${email} to SendGrid`);
+    }
+  } catch (error) {
+    console.error('[Newsletter Sync] Failed to sync subscriber:', error);
+  }
+}
+
 export async function subscribeToNewsletter(formData: FormData) {
   if (!isConfigured) return { error: { message: 'Supabase is not configured. Please connect to Supabase.' } as any };
   const supabase = createAdminClient();
@@ -919,10 +996,13 @@ export async function subscribeToNewsletter(formData: FormData) {
         if (error) throw error;
         
         // Don't send welcome email again for resubscribes, but we could if we wanted.
+        await syncSubscriberToProvider(email, first_name);
         return { success: 'Welcome back! You have been resubscribed.' };
       }
       return { success: 'You are already subscribed!' }; // Don't show error to user for this
     }
+
+    await syncSubscriberToProvider(email, first_name);
 
     const { error } = await supabase.from('subscribers').insert({
       email,
@@ -1111,6 +1191,7 @@ export async function processLeadMagnetDownload(email: string, first_name: strin
         .from('subscribers')
         .update({ status: 'active', consent_given: true, updated_at: new Date().toISOString() })
         .eq('email', email);
+      await syncSubscriberToProvider(email, first_name);
     }
   } else {
     const { data: newSub, error: subError } = await supabase
@@ -1124,6 +1205,7 @@ export async function processLeadMagnetDownload(email: string, first_name: strin
       })
       .select()
       .single();
+    await syncSubscriberToProvider(email, first_name);
     if (subError) throw subError;
     subscriberId = newSub.id;
   }
@@ -1209,10 +1291,104 @@ export async function getAllPublishedPostsForSitemap() {
   if (!isConfigured) return [];
   const supabase = getPublicClient();
   try {
-    const { data } = await supabase.from('posts').select('slug, published_at').eq('status', 'published').order('published_at', { ascending: false });
+    const { data } = await supabase.from('posts').select('slug, published_at').eq('status', 'published').lte('published_at', new Date().toISOString()).order('published_at', { ascending: false });
     return data || [];
   } catch (err: any) {
     if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getAllPublishedPostsForSitemap:', err);
     return [];
+  }
+}
+
+export async function getAllPublishedPostsForFeed() {
+  if (!isConfigured) return [];
+  const supabase = getPublicClient();
+  try {
+    const { data } = await supabase
+      .from('posts')
+      .select(`
+        *,
+        category:categories(name)
+      `)
+      .eq('status', 'published')
+      .lte('published_at', new Date().toISOString())
+      .order('published_at', { ascending: false })
+      .limit(50); // Get latest 50 for feed
+    return data || [];
+  } catch (err: any) {
+    if (err?.code !== '42P01' && err?.message !== 'fetch failed') console.error('Error in getAllPublishedPostsForFeed:', err);
+    return [];
+  }
+}
+
+
+export async function getRelatedPostsByTags(post_id: string, tagIds: string[], limit = 3) {
+  if (!isConfigured || tagIds.length === 0) return [];
+  const supabase = getPublicClient();
+  try {
+    const { data: ptData } = await supabase
+      .from('post_tags')
+      .select('post_id')
+      .in('tag_id', tagIds);
+    if (!ptData || ptData.length === 0) return [];
+    
+    // Get unique post ids excluding the current post
+    const postIds = Array.from(new Set(ptData.map(pt => pt.post_id))).filter(id => id !== post_id);
+    if (postIds.length === 0) return [];
+
+    const { data: posts } = await supabase
+      .from('posts')
+      .select(`
+        *,
+        category:categories(*)
+      `)
+      .in('id', postIds)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+      
+    return posts || [];
+  } catch(e) {
+    return [];
+  }
+}
+
+
+export async function getCurrentUserProfile() {
+  if (!isConfigured) return null;
+  const supabase = await createServerClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) return null;
+  const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+  return data;
+}
+
+export async function hasAccessToPremium() {
+  const profile = await getCurrentUserProfile();
+  if (!profile) return false;
+  return profile.role === 'admin' || profile.role === 'author' || profile.subscription_status === 'active';
+}
+
+
+export async function recordSearch(term: string, resultsCount: number, sessionId: string) {
+  if (!isConfigured || !term) return;
+  const supabase = createServerClient();
+  
+  // Basic debounce: Check if same search was recorded in last minute
+  const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000).toISOString();
+  
+  const { data: recent } = await supabase
+    .from('search_analytics')
+    .select('id')
+    .eq('search_term', term)
+    .eq('session_id', sessionId)
+    .gte('searched_at', oneMinuteAgo)
+    .maybeSingle();
+    
+  if (!recent) {
+    await supabase.from('search_analytics').insert({
+      search_term: term,
+      results_count: resultsCount,
+      session_id: sessionId
+    });
   }
 }

@@ -8,11 +8,16 @@ export async function POST(req: NextRequest) {
 
     const sessionId = req.headers.get('x-forwarded-for') || req.ip || 'anonymous';
     const userAgent = req.headers.get('user-agent') || 'unknown';
+    const referrer = req.headers.get('referer') || req.headers.get('referrer') || undefined;
+    
+    // Vercel and similar edge providers send these headers
+    const country = req.headers.get('x-vercel-ip-country') || undefined;
+    const city = req.headers.get('x-vercel-ip-city') || undefined;
 
-    await recordPostView(postId, sessionId, userAgent);
+    await recordPostView(postId, sessionId, userAgent, referrer, country, city);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     if (error?.message !== 'fetch failed' && !error?.message?.includes('ECONNREFUSED')) console.error('View tracking error:', error);
     return NextResponse.json({ success: false }, { status: 500 });
   }

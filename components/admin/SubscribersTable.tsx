@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { deleteSubscriber, exportSubscribersCsv } from '@/app/admin/subscribers/actions';
+import { deleteSubscriber } from '@/app/admin/subscribers/actions';
 import { Search, Download, Trash2, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -33,11 +33,23 @@ export function SubscribersTable({ initialSubscribers }: { initialSubscribers: a
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
     setExporting(true);
-    const result = await exportSubscribersCsv();
-    if (result.csv && typeof result.csv === 'string') {
-      const blob = new Blob([result.csv], { type: 'text/csv' });
+    try {
+      const headers = ['Email', 'First Name', 'Status', 'Source', 'Joined At'];
+      const rows = filteredSubscribers.map(s => [
+        s.email || '',
+        s.first_name || '',
+        s.status || '',
+        s.source || '',
+        new Date(s.created_at).toISOString()
+      ]);
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -46,6 +58,9 @@ export function SubscribersTable({ initialSubscribers }: { initialSubscribers: a
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to export CSV', err);
+      alert('Failed to export CSV');
     }
     setExporting(false);
   };

@@ -28,19 +28,22 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
 
   return (
     <main className="flex-1 w-full bg-[#FAFAFA] dark:bg-[#050505]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 lg:pt-40 lg:pb-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-20 lg:pt-52 lg:pb-28">
         
         {/* Hero Section */}
         <RevealWrapper className="mb-20 md:mb-28 lg:mb-32 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 flex flex-col justify-center">
-            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-xs tracking-wider uppercase w-max mb-6">
-              Our Newsletter
-            </div>
-            <h1 className="text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-slate-900 dark:text-white mb-6 leading-[1.05] tracking-tight">
-              Scale Your Brand <br className="hidden sm:block" /> with Digital Insights
-            </h1>
+            {settings?.hero_badge !== '' && (
+              <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-xs tracking-wider uppercase w-max mb-6">
+                {settings?.hero_badge || 'Our Newsletter'}
+              </div>
+            )}
+            <h1 
+              className="text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-slate-900 dark:text-white mb-6 leading-[1.05] tracking-tight"
+              dangerouslySetInnerHTML={{ __html: settings?.hero_title || 'Scale Your Brand <br class="hidden sm:block" /> with Digital Insights' }}
+            />
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl font-sans">
-              Actionable strategies, expert tutorials, and proven frameworks on web design, SEO, and digital growth delivered straight to your inbox.
+              {settings?.hero_description || 'Actionable strategies, expert tutorials, and proven frameworks on web design, SEO, and digital growth delivered straight to your inbox.'}
             </p>
             {featuresConfig.enableNewsletter && <HeroNewsletterForm />}
           </div>
@@ -55,10 +58,10 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
                 <div className="space-y-6">
                   <div className="w-full bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/50 dark:border-white/10 transform -rotate-2 hover:rotate-0 transition-transform duration-500">
                     <div className="flex gap-4 items-center mb-4">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">AL</div>
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">{settings?.hero_card_1_icon || 'AL'}</div>
                       <div>
-                        <div className="font-bold text-sm text-slate-900 dark:text-white">New Strategy Guide</div>
-                        <div className="text-xs text-slate-500">Just sent to your inbox</div>
+                        <div className="font-bold text-sm text-slate-900 dark:text-white">{settings?.hero_card_1_title || 'New Strategy Guide'}</div>
+                        <div className="text-xs text-slate-500">{settings?.hero_card_1_subtitle || 'Just sent to your inbox'}</div>
                       </div>
                     </div>
                     <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 mb-2"></div>
@@ -67,10 +70,10 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
                   
                   <div className="w-full bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/50 dark:border-white/10 transform rotate-1 hover:rotate-0 transition-transform duration-500 translate-x-4">
                     <div className="flex gap-4 items-center mb-4">
-                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 font-bold">SEO</div>
+                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 font-bold">{settings?.hero_card_2_icon || 'SEO'}</div>
                       <div>
-                        <div className="font-bold text-sm text-slate-900 dark:text-white">Local SEO Checklist</div>
-                        <div className="text-xs text-slate-500">Attachment included</div>
+                        <div className="font-bold text-sm text-slate-900 dark:text-white">{settings?.hero_card_2_title || 'Local SEO Checklist'}</div>
+                        <div className="text-xs text-slate-500">{settings?.hero_card_2_subtitle || 'Attachment included'}</div>
                       </div>
                     </div>
                     <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 mb-2"></div>
@@ -79,10 +82,10 @@ export default async function BlogHomepage(props: { searchParams: { page?: strin
 
                   <div className="w-full bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/50 dark:border-white/10 transform -rotate-1 hover:rotate-0 transition-transform duration-500 -translate-x-2">
                     <div className="flex gap-4 items-center mb-4">
-                      <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-600 font-bold">CRO</div>
+                      <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-600 font-bold">{settings?.hero_card_3_icon || 'CRO'}</div>
                       <div>
-                        <div className="font-bold text-sm text-slate-900 dark:text-white">Conversion Tips</div>
-                        <div className="text-xs text-slate-500">Read in 3 mins</div>
+                        <div className="font-bold text-sm text-slate-900 dark:text-white">{settings?.hero_card_3_title || 'Conversion Tips'}</div>
+                        <div className="text-xs text-slate-500">{settings?.hero_card_3_subtitle || 'Read in 3 mins'}</div>
                       </div>
                     </div>
                     <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 mb-2"></div>
